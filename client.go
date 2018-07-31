@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 )
 
@@ -49,13 +50,40 @@ func New(network Network, APIKey string) *Client {
 
 // call does almost all the dirty work.
 func (c *Client) call(module, action string, param map[string]interface{}, outcome interface{}) (err error) {
-	// todo: fire hooks
-	// todo: verbose mode
+	// fire hooks if in need
+	if c.BeforeRequest != nil {
+		err = c.BeforeRequest(module, action, param)
+		if err != nil {
+			err = wrapErr(err, "beforeRequest")
+			return
+		}
+	}
+	if c.AfterRequest != nil {
+		defer c.AfterRequest(module, action, param, outcome, err)
+	}
 
-	req, err := http.NewRequest(http.MethodGet, c.craftURL(param), http.NoBody)
+	req, err := http.NewRequest(http.MethodGet, c.craftURL(module, action, param), http.NoBody)
 	if err != nil {
 		err = wrapErr(err, "http.NewRequest")
 		return
+	}
+	req.Header.Set("User-Agent", "etherscan-api(Go)")
+
+	if c.Verbose {
+		var reqDump []byte
+		reqDump, err = httputil.DumpRequestOut(req, false)
+		if err != nil {
+			err = wrapErr(err, "verbose mode req dump failed")
+			return
+		}
+
+		fmt.Printf("\n%s\n", reqDump)
+
+		defer func() {
+			if err != nil {
+				fmt.Printf("[Error] %v\n", err)
+			}
+		}()
 	}
 
 	res, err := c.coon.Do(req)
@@ -64,6 +92,17 @@ func (c *Client) call(module, action string, param map[string]interface{}, outco
 		return
 	}
 	defer res.Body.Close()
+
+	if c.Verbose {
+		var resDump []byte
+		resDump, err = httputil.DumpResponse(res, true)
+		if err != nil {
+			err = wrapErr(err, "verbose mode res dump failed")
+			return
+		}
+
+		fmt.Printf("%s\n", resDump)
+	}
 
 	var content bytes.Buffer
 	if _, err = io.Copy(&content, res.Body); err != nil {
@@ -76,9 +115,20 @@ func (c *Client) call(module, action string, param map[string]interface{}, outco
 		return
 	}
 
-	err = json.Unmarshal(content.Bytes(), outcome)
+	var envelope Envelope
+	err = json.Unmarshal(content.Bytes(), &envelope)
 	if err != nil {
-		err = wrapErr(err, "json unmarshal")
+		err = wrapErr(err, "json unmarshal envelope")
+		return
+	}
+	if envelope.Status != 1 {
+		err = fmt.Errorf("etherscan server: %s", envelope.Message)
+		return
+	}
+
+	err = json.Unmarshal(envelope.Result, outcome)
+	if err != nil {
+		err = wrapErr(err, "json unmarshal outcome")
 		return
 	}
 
@@ -86,8 +136,10 @@ func (c *Client) call(module, action string, param map[string]interface{}, outco
 }
 
 // craftURL returns desired URL via param provided
-func (c *Client) craftURL(param map[string]interface{}) (URL string) {
+func (c *Client) craftURL(module, action string, param map[string]interface{}) (URL string) {
 	q := url.Values{
+		"module": []string{module},
+		"action": []string{action},
 		"apikey": []string{c.key},
 	}
 
