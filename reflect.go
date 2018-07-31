@@ -27,7 +27,8 @@ func extractValue(input interface{}) (output []string) {
 			output[i] = valueToStr(v.Index(i))
 		}
 	} else {
-		output = append(output, valueToStr(v))
+		output = make([]string, 1, 1)
+		output[0] = valueToStr(v)
 	}
 
 	return
