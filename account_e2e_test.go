@@ -8,8 +8,6 @@
 package etherscan
 
 import (
-	"encoding/json"
-	"fmt"
 	"math/big"
 	"testing"
 )
@@ -107,8 +105,8 @@ func TestClient_UnclesMinedByAddress(t *testing.T) {
 	blocks, err := api.UnclesMinedByAddress("0x9dd134d14d1e65f84b706d6f205cd5b1cd03a46b", 1, wantLen)
 	noError(t, err, "api.UnclesMinedByAddress")
 
-	j, _ := json.MarshalIndent(blocks, "", "  ")
-	fmt.Printf("%s\n", j)
+	//j, _ := json.MarshalIndent(blocks, "", "  ")
+	//fmt.Printf("%s\n", j)
 
 	if len(blocks) != wantLen {
 		t.Errorf("got txs length %v, want %v", len(blocks), wantLen)
