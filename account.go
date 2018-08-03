@@ -7,17 +7,109 @@
 
 package etherscan
 
-import "math/big"
-
-// SingleAddrBalance get latest address balance
-func (c *Client) SingleAddrBalance(address string) (balance *big.Int, err error) {
+// AccountBalance gets ether balance for a single address
+func (c *Client) AccountBalance(address string) (balance *BigInt, err error) {
 	param := M{
 		"tag":     "latest",
 		"address": address,
 	}
+	balance = new(BigInt)
+	err = c.call("account", "balance", param, balance)
+	return
+}
 
-	var b BigInt
-	err = c.call("account", "balance", param, &b)
-	balance = (*big.Int)(&b)
+// MultiAccountBalance gets ether balance for multiple addresses in a single call
+func (c *Client) MultiAccountBalance(addresses ...string) (balances []AccountBalance, err error) {
+	param := M{
+		"tag":     "latest",
+		"address": addresses,
+	}
+	balances = make([]AccountBalance, 0, len(addresses))
+	err = c.call("account", "balancemulti", param, &balances)
+	return
+}
+
+// NormalTxByAddress gets a list of "normal" transactions by address
+// startBlock and endBlock can be nil
+// if desc is true, result will be sorted in blockNum descendant order.
+func (c *Client) NormalTxByAddress(address string, startBlock *int, endBlock *int, page int, offset int, desc bool) (txs []NormalTx, err error) {
+	param := M{
+		"address": address,
+		"page":    page,
+		"offset":  offset,
+	}
+	compose(param, "startblock", startBlock)
+	compose(param, "endblock", endBlock)
+	if desc {
+		param["sort"] = "desc"
+	} else {
+		param["sort"] = "asc"
+	}
+
+	err = c.call("account", "txlist", param, &txs)
+	return
+}
+
+// InternalTxByAddress gets a list of "internal" transactions by address
+// startBlock and endBlock can be nil
+// if desc is true, result will be sorted in descendant order.
+func (c *Client) InternalTxByAddress(address string, startBlock *int, endBlock *int, page int, offset int, desc bool) (txs []InternalTx, err error) {
+	param := M{
+		"address": address,
+		"page":    page,
+		"offset":  offset,
+	}
+	compose(param, "startblock", startBlock)
+	compose(param, "endblock", endBlock)
+	if desc {
+		param["sort"] = "desc"
+	} else {
+		param["sort"] = "asc"
+	}
+
+	err = c.call("account", "txlistinternal", param, &txs)
+	return
+}
+
+// ERC20TransferTx get a list of "erc20 - token transfer events" by
+// contract address and/or from/to address.
+// leave undesired condition to nil.
+func (c *Client) ERC20TransferTx(contractAddress, address *string, startBlock *int, endBlock *int, page int, offset int) (txs []ERC20Transfer, err error) {
+	param := M{
+		"page":   page,
+		"offset": offset,
+	}
+	compose(param, "contractaddress", contractAddress)
+	compose(param, "address", address)
+	compose(param, "startblock", startBlock)
+	compose(param, "endblock", endBlock)
+
+	err = c.call("account", "tokentx", param, &txs)
+	return
+}
+
+// BlocksMinedByAddress gets list of blocks mined by address
+func (c *Client) BlocksMinedByAddress(address string, page int, offset int) (mined []MinedBlock, err error) {
+	param := M{
+		"address":   address,
+		"blocktype": "blocks",
+		"page":      page,
+		"offset":    offset,
+	}
+
+	err = c.call("account", "getminedblocks", param, &mined)
+	return
+}
+
+// UnclesMinedByAddress gets list of uncles mined by address
+func (c *Client) UnclesMinedByAddress(address string, page int, offset int) (mined []MinedBlock, err error) {
+	param := M{
+		"address":   address,
+		"blocktype": "uncles",
+		"page":      page,
+		"offset":    offset,
+	}
+
+	err = c.call("account", "getminedblocks", param, &mined)
 	return
 }
