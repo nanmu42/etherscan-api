@@ -17,7 +17,7 @@ import (
 // input. It only handles string, int, and their slice form, and
 // panics otherwise.
 func extractValue(input interface{}) (output []string) {
-	v := reflect.ValueOf(input)
+	v := direct(reflect.ValueOf(input))
 
 	if v.Kind() == reflect.Slice {
 		length := v.Len()
@@ -46,4 +46,13 @@ func valueToStr(v reflect.Value) (str string) {
 		panic(fmt.Sprintf("valueToStr: %v is of unexpected kind %q", v.Interface(), v.Kind()))
 	}
 	return
+}
+
+// direct traverses the pointer chain to fetch
+// the solid value
+func direct(v reflect.Value) reflect.Value {
+	for ; v.Kind() == reflect.Ptr; v = v.Elem() {
+		// relax
+	}
+	return v
 }
