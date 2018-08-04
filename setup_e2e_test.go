@@ -20,7 +20,7 @@ var (
 )
 
 func init() {
-	bucket = NewBucket(5, 200*time.Microsecond)
+	bucket = NewBucket(200 * time.Microsecond)
 
 	api = New(Mainnet, "etherscan-api-e2e-test")
 	api.Verbose = true
@@ -38,9 +38,9 @@ type Bucket struct {
 }
 
 // NewBucket factory of Bucket
-func NewBucket(cap int, refillTime time.Duration) (b *Bucket) {
+func NewBucket(refillTime time.Duration) (b *Bucket) {
 	b = &Bucket{
-		bucket:     make(chan bool, cap-1),
+		bucket:     make(chan bool),
 		refillTime: refillTime,
 	}
 
@@ -52,13 +52,18 @@ func NewBucket(cap int, refillTime time.Duration) (b *Bucket) {
 // Take a action token from bucket,
 // blocks if there is currently no token left.
 func (b *Bucket) Take() {
-	b.bucket <- true
+	<-b.bucket
 }
 
 // fill a action token into bucket,
-// blocks if the bucket is currently full
+// no-op if the bucket is currently full
 func (b *Bucket) fill() {
-	<-b.bucket
+	select {
+	case b.bucket <- true:
+		// relax
+	default:
+		// relax
+	}
 }
 
 func (b *Bucket) fillRoutine() {
