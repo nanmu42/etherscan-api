@@ -114,3 +114,17 @@ type ExecutionStatus struct {
 	IsError        int    `json:"isError,string"`
 	ErrDescription string `json:"errDescription"`
 }
+
+// BlockRewards holds info from query for block and uncle rewards
+type BlockRewards struct {
+	BlockNumber int     `json:"blockNumber,string"`
+	TimeStamp   Time    `json:"timeStamp"`
+	BlockMiner  string  `json:"blockMiner"`
+	BlockReward *BigInt `json:"blockReward"`
+	Uncles      []struct {
+		Miner         string  `json:"miner"`
+		UnclePosition int     `json:"unclePosition,string"`
+		BlockReward   *BigInt `json:"blockreward"`
+	} `json:"uncles"`
+	UncleInclusionReward *BigInt `json:"uncleInclusionReward"`
+}
