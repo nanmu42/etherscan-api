@@ -75,6 +75,6 @@ func (t Time) Time() time.Time {
 }
 
 // MarshalText implements the encoding.TextMarshaler
-func (t *Time) MarshalText() (text []byte, err error) {
+func (t Time) MarshalText() (text []byte, err error) {
 	return []byte(strconv.FormatInt(t.Time().Unix(), 10)), nil
 }
