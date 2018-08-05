@@ -94,3 +94,16 @@ type MinedBlock struct {
 	TimeStamp   Time    `json:"timeStamp"`
 	BlockReward *BigInt `json:"blockReward"`
 }
+
+// ContractSource holds info from query for contract source code
+type ContractSource struct {
+	SourceCode           string `json:"SourceCode"`
+	ABI                  string `json:"ABI"`
+	ContractName         string `json:"ContractName"`
+	CompilerVersion      string `json:"CompilerVersion"`
+	OptimizationUsed     int    `json:"OptimizationUsed,string"`
+	Runs                 int    `json:"Runs,string"`
+	ConstructorArguments string `json:"ConstructorArguments"`
+	Library              string `json:"Library"`
+	SwarmSource          string `json:"SwarmSource"`
+}
