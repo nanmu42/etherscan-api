@@ -107,3 +107,10 @@ type ContractSource struct {
 	Library              string `json:"Library"`
 	SwarmSource          string `json:"SwarmSource"`
 }
+
+// ExecutionStatus holds info from query for transaction execution status
+type ExecutionStatus struct {
+	// 0 = pass, 1 = error
+	IsError        int    `json:"isError,string"`
+	ErrDescription string `json:"errDescription"`
+}
