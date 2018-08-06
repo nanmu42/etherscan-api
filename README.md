@@ -7,8 +7,6 @@
 
 Go bindings to the Etherscan.io API, with nearly Full implementation(accounts, transactions, tokens, contracts, blocks, stats), full network support(Mainnet, Ropsten, Kovan, Rinkby, Tobalaba), and only depending on standard library. :wink:
 
-![etherscan-api-go](https://user-images.githubusercontent.com/8143068/43701511-04762080-9989-11e8-8731-8504924da4e1.png)
-
 # Usage
 
 Create a API instance and off you go. :rocket:
