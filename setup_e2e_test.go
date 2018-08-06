@@ -58,12 +58,7 @@ func (b *Bucket) Take() {
 // fill a action token into bucket,
 // no-op if the bucket is currently full
 func (b *Bucket) fill() {
-	select {
-	case b.bucket <- true:
-		// relax
-	default:
-		// relax
-	}
+	b.bucket <- true
 }
 
 func (b *Bucket) fillRoutine() {
