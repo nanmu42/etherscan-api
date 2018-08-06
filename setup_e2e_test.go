@@ -20,7 +20,7 @@ var (
 )
 
 func init() {
-	bucket = NewBucket(500 * time.Microsecond)
+	bucket = NewBucket(200 * time.Millisecond)
 
 	api = New(Mainnet, "etherscan-api-e2e-test")
 	api.Verbose = true
