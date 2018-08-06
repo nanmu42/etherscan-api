@@ -18,3 +18,13 @@ func (c *Client) EtherLatestPrice() (price LatestPrice, err error) {
 	err = c.call("stats", "ethprice", nil, &price)
 	return
 }
+
+// TokenTotalSupply gets total supply of token on specified contract address
+func (c *Client) TokenTotalSupply(contractAddress string) (totalSupply *BigInt, err error) {
+	param := M{
+		"contractaddress": contractAddress,
+	}
+
+	err = c.call("stats", "tokensupply", param, &totalSupply)
+	return
+}

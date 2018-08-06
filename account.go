@@ -113,3 +113,15 @@ func (c *Client) UnclesMinedByAddress(address string, page int, offset int) (min
 	err = c.call("account", "getminedblocks", param, &mined)
 	return
 }
+
+// TokenBalance get erc20-token account balance of address for contractAddress
+func (c *Client) TokenBalance(contractAddress, address string) (balance *BigInt, err error) {
+	param := M{
+		"contractaddress": contractAddress,
+		"address":         address,
+		"tag":             "latest",
+	}
+
+	err = c.call("account", "tokenbalance", param, &balance)
+	return
+}

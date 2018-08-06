@@ -112,3 +112,12 @@ func TestClient_UnclesMinedByAddress(t *testing.T) {
 		t.Errorf("got txs length %v, want %v", len(blocks), wantLen)
 	}
 }
+
+func TestClient_TokenBalance(t *testing.T) {
+	balance, err := api.TokenBalance("0x57d90b64a1a57749b0f932f1a3395792e12e7055", "0xe04f27eb70e025b78871a2ad7eabe85e61212761")
+	noError(t, err, "api.TokenBalance")
+
+	if balance.Int().Cmp(big.NewInt(0)) != 1 {
+		t.Errorf("api.TokenBalance not working, got balance %s", balance.Int().String())
+	}
+}

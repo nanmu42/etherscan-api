@@ -38,3 +38,12 @@ func TestClient_EtherLatestPrice(t *testing.T) {
 		t.Errorf("ETHUSDTimestamp is zero")
 	}
 }
+
+func TestClient_TokenTotalSupply(t *testing.T) {
+	totalSupply, err := api.TokenTotalSupply("0x57d90b64a1a57749b0f932f1a3395792e12e7055")
+	noError(t, err, "api.TokenTotalSupply")
+
+	if totalSupply.Int().Cmp(big.NewInt(100)) != 1 {
+		t.Errorf("api.TokenTotalSupply not working, totalSupply is %s", totalSupply.Int().String())
+	}
+}
