@@ -128,3 +128,11 @@ type BlockRewards struct {
 	} `json:"uncles"`
 	UncleInclusionReward *BigInt `json:"uncleInclusionReward"`
 }
+
+// LatestPrice holds info from query for latest ether price
+type LatestPrice struct {
+	ETHBTC          float64 `json:"ethbtc,string"`
+	ETHBTCTimestamp Time    `json:"ethbtc_timestamp"`
+	ETHUSD          float64 `json:"ethusd,string"`
+	ETHUSDTimestamp Time    `json:"ethusd_timestamp"`
+}
