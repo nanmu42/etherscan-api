@@ -4,7 +4,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/nanmu42/etherscan-api)](https://goreportcard.com/report/github.com/nanmu42/etherscan-api)
 [![codecov](https://codecov.io/gh/nanmu42/etherscan-api/branch/master/graph/badge.svg)](https://codecov.io/gh/nanmu42/etherscan-api)
 [![GoDoc](https://godoc.org/github.com/nanmu42/etherscan-api?status.svg)](https://godoc.org/github.com/nanmu42/etherscan-api)
-[English Readme](https://github.com/nanmu42/etherscan-api/blob/master/README.md)
+[![English Readme](https://img.shields.io/badge/English%20Doc-Click%20Me-blue.svg)](https://github.com/nanmu42/etherscan-api/blob/master/README.md)
 
 Etherscan.io的Golang实现，
 支持几乎所有功能（accounts, transactions, tokens, contracts, blocks, stats），

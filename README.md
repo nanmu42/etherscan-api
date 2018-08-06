@@ -4,7 +4,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/nanmu42/etherscan-api)](https://goreportcard.com/report/github.com/nanmu42/etherscan-api)
 [![codecov](https://codecov.io/gh/nanmu42/etherscan-api/branch/master/graph/badge.svg)](https://codecov.io/gh/nanmu42/etherscan-api)
 [![GoDoc](https://godoc.org/github.com/nanmu42/etherscan-api?status.svg)](https://godoc.org/github.com/nanmu42/etherscan-api)
-[中文文档](https://github.com/nanmu42/etherscan-api/blob/master/README_ZH.md)
+[![中文文档](https://img.shields.io/badge/%E4%B8%AD%E6%96%87%E6%96%87%E6%A1%A3-%E7%82%B9%E6%88%91%E9%98%85%E8%AF%BB-blue.svg)](https://github.com/nanmu42/etherscan-api/blob/master/README_ZH.md)
 
 Go bindings to the Etherscan.io API, with nearly Full implementation(accounts, transactions, tokens, contracts, blocks, stats), full network support(Mainnet, Ropsten, Kovan, Rinkby, Tobalaba), and only depending on standard library. :wink:
 
