@@ -4,13 +4,16 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/nanmu42/etherscan-api)](https://goreportcard.com/report/github.com/nanmu42/etherscan-api)
 [![codecov](https://codecov.io/gh/nanmu42/etherscan-api/branch/master/graph/badge.svg)](https://codecov.io/gh/nanmu42/etherscan-api)
 [![GoDoc](https://godoc.org/github.com/nanmu42/etherscan-api?status.svg)](https://godoc.org/github.com/nanmu42/etherscan-api)
-[中文文档](https://github.com/nanmu42/etherscan-api/blob/master/README_ZH.md)
+[English Readme](https://github.com/nanmu42/etherscan-api/blob/master/README.md)
 
-Go bindings to the Etherscan.io API, with nearly Full implementation(accounts, transactions, tokens, contracts, blocks, stats), full network support(Mainnet, Ropsten, Kovan, Rinkby, Tobalaba), and only depending on standard library. :wink:
+Etherscan.io的Golang实现，
+支持几乎所有功能（accounts, transactions, tokens, contracts, blocks, stats），
+所有公共网络（Mainnet, Ropsten, Kovan, Rinkby, Tobalaba）。
+本项目只依赖于官方库。 :wink:
 
 # Usage
 
-Create a API instance and off you go. :rocket:
+填入网络选项和API Key即可开始使用。 :rocket:
 
 ```go
 import (
@@ -19,11 +22,10 @@ import (
 )
 
 func main() {
-	// create a API client for specified ethereum net
-	// there are many pre-defined network in package
+	// 创建连接指定网络的客户端
 	client := etherscan.New(etherscan.Mainnet, "[your API key]")
 
-	// (optional) add hooks, e.g. for rate limit
+	// （可选）按需注册钩子函数，例如用于速率控制
 	client.BeforeRequest = func(module, action string, param map[string]interface{}) error {
 		// ...
 	}
@@ -31,36 +33,37 @@ func main() {
 		// ...
 	}
 
-	// check account balance
+	// 查询账户以太坊余额
 	balance, err := client.AccountBalance("0x281055afc982d96fab65b3a49cac8b878184cb16")
 	if err != nil {
 		panic(err)
 	}
-	// balance in wei, in *big.Int type
+	// 余额以 *big.Int 的类型呈现，单位为 wei
 	fmt.Println(balance.Int())
 
-	// check token balance
+	// 查询token余额
 	tokenBalance, err := client.TokenBalance("contractAddress", "holderAddress")
 
-	// check ERC20 transactions from/to a specified address
+	// 查询出入指定地址的ERC20转账列表
 	transfers, err := client.ERC20Transfers("contractAddress", "address", startBlock, endBlock, page, offset)
 }
 ```
 
-You may find full method list at [GoDoc](https://godoc.org/github.com/nanmu42/etherscan-api).
+客户端方法列表可在[GoDoc](https://godoc.org/github.com/nanmu42/etherscan-api)查询。
 
 # Etherscan API Key
 
-You may apply for an API key on [etherscan](https://etherscan.io/apis).
+API Key可以在[etherscan](https://etherscan.io/apis)申请。
 
-> The Etherscan Ethereum Developer APIs are provided as a community service and without warranty, so please just use what you need and no more. They support both GET/POST requests and a rate limit of 5 requests/sec (exceed and you will be blocked). 
+Etherscan的API服务是一个公开的社区无偿服务，请避免滥用。
+API的调用速率不能高于5次/秒，否则会遭到封禁。
 
-# Paperwork Things
+# 利益声明
 
-I am not from Etherscan and I just find their service really useful, so I implement this. :smile:
+我和Etherscan没有任何联系。我仅仅是觉得他们的服务很棒，而自己又恰好需要这样一个库。 :smile:
 
-# License
+# 许可证
 
-Use of this work is governed by a MIT License.
+MIT
 
-You may find a license copy in project root.
+请自由享受开源，欢迎贡献开源。
