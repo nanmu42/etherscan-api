@@ -71,10 +71,10 @@ func (c *Client) InternalTxByAddress(address string, startBlock *int, endBlock *
 	return
 }
 
-// ERC20TransferTx get a list of "erc20 - token transfer events" by
+// ERC20Transfers get a list of "erc20 - token transfer events" by
 // contract address and/or from/to address.
 // leave undesired condition to nil.
-func (c *Client) ERC20TransferTx(contractAddress, address *string, startBlock *int, endBlock *int, page int, offset int) (txs []ERC20Transfer, err error) {
+func (c *Client) ERC20Transfers(contractAddress, address *string, startBlock *int, endBlock *int, page int, offset int) (txs []ERC20Transfer, err error) {
 	param := M{
 		"page":   page,
 		"offset": offset,
