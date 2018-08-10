@@ -68,6 +68,7 @@ func (c *Client) call(module, action string, param map[string]interface{}, outco
 		return
 	}
 	req.Header.Set("User-Agent", "etherscan-api(Go)")
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 
 	if c.Verbose {
 		var reqDump []byte
