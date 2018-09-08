@@ -9,16 +9,28 @@ package etherscan
 
 import (
 	"math/big"
+	"reflect"
 	"strconv"
 	"time"
 )
 
 // compose adds input to param, whose key is tag
-// if input is nil, compose is a no-op.
+// if input is nil or nil of some type, compose is a no-op.
 func compose(param map[string]interface{}, tag string, input interface{}) {
+	// simple situation
 	if input == nil {
 		return
 	}
+
+	// needs dig further
+	v := reflect.ValueOf(input)
+	switch v.Kind() {
+	case reflect.Ptr, reflect.Slice, reflect.Interface:
+		if v.IsNil() {
+			return
+		}
+	}
+
 	param[tag] = input
 }
 

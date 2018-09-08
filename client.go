@@ -62,6 +62,13 @@ func (c *Client) call(module, action string, param map[string]interface{}, outco
 		defer c.AfterRequest(module, action, param, outcome, err)
 	}
 
+	// recover if there shall be an panic
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("[ouch! panic recovered] please report this with what you did and what you expected, panic detail: %v", r)
+		}
+	}()
+
 	req, err := http.NewRequest(http.MethodGet, c.craftURL(module, action, param), http.NoBody)
 	if err != nil {
 		err = wrapErr(err, "http.NewRequest")
