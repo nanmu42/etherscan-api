@@ -70,18 +70,27 @@ func TestClient_InternalTxByAddress(t *testing.T) {
 }
 
 func TestClient_ERC20Transfers(t *testing.T) {
-	const wantLen = 3
+	const (
+		wantLen1 = 3
+		wantLen2 = 458
+	)
 
 	var a, b = 3273004, 3328071
 	var contract, address = "0xe0b7927c4af23765cb51314a0e0521a9645f0e2a", "0x4e83362442b8d1bec281594cea3050c8eb01311c"
 	txs, err := api.ERC20Transfers(&contract, &address, &a, &b, 1, 500)
-	noError(t, err, "api.ERC20Transfers")
+	noError(t, err, "api.ERC20Transfers 1")
 
 	//j, _ := json.MarshalIndent(txs, "", "  ")
 	//fmt.Printf("%s\n", j)
 
-	if len(txs) != wantLen {
-		t.Errorf("got txs length %v, want %v", len(txs), wantLen)
+	if len(txs) != wantLen1 {
+		t.Errorf("got txs length %v, want %v", len(txs), wantLen1)
+	}
+
+	txs, err = api.ERC20Transfers(nil, &address, nil, &b, 1, 500)
+	noError(t, err, "api.ERC20Transfers 2")
+	if len(txs) != wantLen2 {
+		t.Errorf("got txs length %v, want %v", len(txs), wantLen2)
 	}
 }
 
