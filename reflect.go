@@ -43,7 +43,7 @@ func valueToStr(v reflect.Value) (str string) {
 	case reflect.Int:
 		str = strconv.FormatInt(v.Int(), 10)
 	default:
-		panic(fmt.Sprintf("valueToStr: %v is of unexpected kind %q", v.Interface(), v.Kind()))
+		panic(fmt.Sprintf("valueToStr: %v is of unexpected kind %q", v, v.Kind()))
 	}
 	return
 }
