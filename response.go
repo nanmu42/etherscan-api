@@ -60,7 +60,7 @@ type InternalTx struct {
 	Type            string  `json:"type"`
 	Gas             int     `json:"gas,string"`
 	GasUsed         int     `json:"gasUsed,string"`
-	TraceID         string     `json:"traceId"`
+	TraceID         string  `json:"traceId"`
 	IsError         int     `json:"isError,string"`
 	ErrCode         string  `json:"errCode"`
 }
