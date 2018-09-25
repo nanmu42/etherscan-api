@@ -84,7 +84,9 @@ func (c *Client) ERC20Transfers(contractAddress, address *string, startBlock *in
 		"page":   page,
 		"offset": offset,
 	}
-	compose(param, "contractaddress", contractAddress)
+	if len(*contractAddress) > 0 {
+		compose(param, "contractaddress", contractAddress)
+	}
 	compose(param, "address", address)
 	compose(param, "startblock", startBlock)
 	compose(param, "endblock", endBlock)
