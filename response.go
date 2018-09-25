@@ -78,7 +78,7 @@ type ERC20Transfer struct {
 	Value             *BigInt `json:"value"`
 	TokenName         string  `json:"tokenName"`
 	TokenSymbol       string  `json:"tokenSymbol"`
-	TokenDecimal      uint8   `json:"tokenDecimal,string"`
+	TokenDecimal      string  `json:"tokenDecimal"`
 	TransactionIndex  int     `json:"transactionIndex,string"`
 	Gas               int     `json:"gas,string"`
 	GasPrice          *BigInt `json:"gasPrice"`
