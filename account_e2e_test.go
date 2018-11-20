@@ -73,6 +73,7 @@ func TestClient_ERC20Transfers(t *testing.T) {
 	const (
 		wantLen1 = 3
 		wantLen2 = 458
+		wantLen3 = 2
 	)
 
 	var a, b = 3273004, 3328071
@@ -91,6 +92,17 @@ func TestClient_ERC20Transfers(t *testing.T) {
 	noError(t, err, "api.ERC20Transfers 2")
 	if len(txs) != wantLen2 {
 		t.Errorf("got txs length %v, want %v", len(txs), wantLen2)
+	}
+
+	// some ERC20 contract does not have valid decimals information in Etherscan,
+	// which brings errors like `json: invalid use of ,string struct tag, trying to unmarshal "" into uint8`
+	var specialContract = "0x5eac95ad5b287cf44e058dcf694419333b796123"
+	var specialStartHeight = 6024142
+	var specialEndHeight = 6485274
+	txs, err = api.ERC20Transfers(&specialContract, nil, &specialStartHeight, &specialEndHeight, 1, 500)
+	noError(t, err, "api.ERC20Transfers 2")
+	if len(txs) != wantLen3 {
+		t.Errorf("got txs length %v, want %v", len(txs), wantLen3)
 	}
 }
 

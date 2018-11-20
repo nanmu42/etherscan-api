@@ -79,6 +79,14 @@ func (c *Client) InternalTxByAddress(address string, startBlock *int, endBlock *
 // contract address and/or from/to address.
 //
 // leave undesired condition to nil.
+//
+// Note on a Etherscan bug:
+// Some ERC20 contract does not have valid decimals information in Etherscan.
+// When that happen TokenName, TokenSymbol are empty strings,
+// and TokenDecimal is 0.
+//
+// More information can be found at:
+// https://github.com/nanmu42/etherscan-api/issues/8
 func (c *Client) ERC20Transfers(contractAddress, address *string, startBlock *int, endBlock *int, page int, offset int) (txs []ERC20Transfer, err error) {
 	param := M{
 		"page":   page,

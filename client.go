@@ -134,7 +134,12 @@ func (c *Client) call(module, action string, param map[string]interface{}, outco
 		return
 	}
 
-	err = json.Unmarshal(envelope.Result, outcome)
+	// workaround for missing tokenDecimal for some tokentx calls
+	if action == "tokentx" {
+		err = json.Unmarshal(bytes.Replace(envelope.Result, []byte(`"tokenDecimal":""`), []byte(`"tokenDecimal":"0"`), -1), outcome)
+	} else {
+		err = json.Unmarshal(envelope.Result, outcome)
+	}
 	if err != nil {
 		err = wrapErr(err, "json unmarshal outcome")
 		return
