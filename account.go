@@ -82,7 +82,7 @@ func (c *Client) InternalTxByAddress(address string, startBlock *int, endBlock *
 //
 // Note on a Etherscan bug:
 // Some ERC20 contract does not have valid decimals information in Etherscan.
-// When that happen TokenName, TokenSymbol are empty strings,
+// When that happens, TokenName, TokenSymbol are empty strings,
 // and TokenDecimal is 0.
 //
 // More information can be found at:
