@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"time"
 )
 
 // Client etherscan API client
@@ -41,7 +42,9 @@ type Client struct {
 // please use pre-defined network value
 func New(network Network, APIKey string) *Client {
 	return &Client{
-		coon:    &http.Client{},
+		coon: &http.Client{
+			Timeout: 30 * time.Second,
+		},
 		network: network,
 		key:     APIKey,
 		baseURL: fmt.Sprintf(`https://%s.etherscan.io/api?`, network.SubDomain()),
