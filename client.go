@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"time"
 )
 
 // Client etherscan API client
@@ -41,7 +42,9 @@ type Client struct {
 // please use pre-defined network value
 func New(network Network, APIKey string) *Client {
 	return &Client{
-		coon:    &http.Client{},
+		coon: &http.Client{
+			Timeout: 30 * time.Second,
+		},
 		network: network,
 		key:     APIKey,
 		baseURL: fmt.Sprintf(`https://%s.etherscan.io/api?`, network.SubDomain()),
@@ -134,7 +137,12 @@ func (c *Client) call(module, action string, param map[string]interface{}, outco
 		return
 	}
 
-	err = json.Unmarshal(envelope.Result, outcome)
+	// workaround for missing tokenDecimal for some tokentx calls
+	if action == "tokentx" {
+		err = json.Unmarshal(bytes.Replace(envelope.Result, []byte(`"tokenDecimal":""`), []byte(`"tokenDecimal":"0"`), -1), outcome)
+	} else {
+		err = json.Unmarshal(envelope.Result, outcome)
+	}
 	if err != nil {
 		err = wrapErr(err, "json unmarshal outcome")
 		return
