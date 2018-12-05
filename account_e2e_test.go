@@ -13,7 +13,7 @@ import (
 )
 
 func TestClient_AccountBalance(t *testing.T) {
-	balance, err := api.AccountBalance("0x281055afc982d96fab65b3a49cac8b878184cb16")
+	balance, err := api.AccountBalance("0x0000000000000000000000000000000000000000")
 	noError(t, err, "api.AccountBalance")
 
 	if balance.Int().Cmp(big.NewInt(0)) != 1 {
@@ -23,10 +23,10 @@ func TestClient_AccountBalance(t *testing.T) {
 
 func TestClient_MultiAccountBalance(t *testing.T) {
 	balances, err := api.MultiAccountBalance(
-		"0x281055afc982d96fab65b3a49cac8b878184cb16",
-		"0x6f46cf5569aefa1acc1009290c8e043747172d89",
-		"0x90e63c3d53e0ea496845b7a03ec7548b70014a91",
-		"0x53d284357ec70ce289d6d64134dfac8e511c8a3d")
+		"0x0000000000000000000000000000000000000000",
+		"0x0000000000000000000000000000000000000001",
+		"0x0000000000000000000000000000000000000002",
+		"0x0000000000000000000000000000000000000003")
 	noError(t, err, "api.MultiAccountBalance")
 
 	for i, item := range balances {
