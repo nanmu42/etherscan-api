@@ -45,7 +45,7 @@ func main() {
 	tokenBalance, err := client.TokenBalance("contractAddress", "holderAddress")
 
 	// 查询出入指定地址的ERC20转账列表
-	transfers, err := client.ERC20Transfers("contractAddress", "address", startBlock, endBlock, page, offset)
+	transfers, err := client.ERC20Transfers("contractAddress", "address","asc", startBlock, endBlock, page, offset)
 }
 ```
 
