@@ -43,7 +43,7 @@ func main() {
 	tokenBalance, err := client.TokenBalance("contractAddress", "holderAddress")
 
 	// check ERC20 transactions from/to a specified address
-	transfers, err := client.ERC20Transfers("contractAddress", "address", startBlock, endBlock, page, offset)
+	transfers, err := client.ERC20Transfers("contractAddress", "address","asc", startBlock, endBlock, page, offset)
 }
 ```
 
@@ -53,7 +53,7 @@ You may find full method list at [GoDoc](https://godoc.org/github.com/nanmu42/et
 
 You may apply for an API key on [etherscan](https://etherscan.io/apis).
 
-> The Etherscan Ethereum Developer APIs are provided as a community service and without warranty, so please just use what you need and no more. They support both GET/POST requests and a rate limit of 5 requests/sec (exceed and you will be blocked). 
+> The Etherscan Ethereum Developer APIs are provided as a community service and without warranty, so please just use what you need and no more. They support both GET/POST requests and a rate limit of 5 requests/sec (exceed and you will be blocked).
 
 # Paperwork Things
 
