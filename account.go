@@ -87,7 +87,7 @@ func (c *Client) InternalTxByAddress(address string, startBlock *int, endBlock *
 //
 // More information can be found at:
 // https://github.com/nanmu42/etherscan-api/issues/8
-func (c *Client) ERC20Transfers(contractAddress, address *string, startBlock *int, endBlock *int, page int, offset int) (txs []ERC20Transfer, err error) {
+func (c *Client) ERC20Transfers(contractAddress, address,sort *string, startBlock *int, endBlock *int, page int, offset int) (txs []ERC20Transfer, err error) {
 	param := M{
 		"page":   page,
 		"offset": offset,
@@ -96,6 +96,7 @@ func (c *Client) ERC20Transfers(contractAddress, address *string, startBlock *in
 	compose(param, "address", address)
 	compose(param, "startblock", startBlock)
 	compose(param, "endblock", endBlock)
+	compose(param, "sort", sort) // asc - 升序，desc - 降序
 
 	err = c.call("account", "tokentx", param, &txs)
 	return
