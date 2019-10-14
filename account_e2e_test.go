@@ -78,7 +78,7 @@ func TestClient_ERC20Transfers(t *testing.T) {
 
 	var a, b = 3273004, 3328071
 	var contract, address = "0xe0b7927c4af23765cb51314a0e0521a9645f0e2a", "0x4e83362442b8d1bec281594cea3050c8eb01311c"
-	txs, err := api.ERC20Transfers(&contract, &address, &a, &b, 1, 500)
+	txs, err := api.ERC20Transfers(&contract, &address, &a, &b, 1, 500, false)
 	noError(t, err, "api.ERC20Transfers 1")
 
 	//j, _ := json.MarshalIndent(txs, "", "  ")
@@ -88,8 +88,15 @@ func TestClient_ERC20Transfers(t *testing.T) {
 		t.Errorf("got txs length %v, want %v", len(txs), wantLen1)
 	}
 
-	txs, err = api.ERC20Transfers(nil, &address, nil, &b, 1, 500)
-	noError(t, err, "api.ERC20Transfers 2")
+	txs, err = api.ERC20Transfers(nil, &address, nil, &b, 1, 500, false)
+	noError(t, err, "api.ERC20Transfers 2 asc")
+	if len(txs) != wantLen2 {
+		t.Errorf("got txs length %v, want %v", len(txs), wantLen2)
+	}
+
+	txs, err = api.ERC20Transfers(nil, &address, nil, &b, 1, 500, true)
+	noError(t, err, "api.ERC20Transfers 2 desc")
+
 	if len(txs) != wantLen2 {
 		t.Errorf("got txs length %v, want %v", len(txs), wantLen2)
 	}
@@ -99,7 +106,7 @@ func TestClient_ERC20Transfers(t *testing.T) {
 	var specialContract = "0x5eac95ad5b287cf44e058dcf694419333b796123"
 	var specialStartHeight = 6024142
 	var specialEndHeight = 6485274
-	txs, err = api.ERC20Transfers(&specialContract, nil, &specialStartHeight, &specialEndHeight, 1, 500)
+	txs, err = api.ERC20Transfers(&specialContract, nil, &specialStartHeight, &specialEndHeight, 1, 500, false)
 	noError(t, err, "api.ERC20Transfers 2")
 	if len(txs) != wantLen3 {
 		t.Errorf("got txs length %v, want %v", len(txs), wantLen3)
