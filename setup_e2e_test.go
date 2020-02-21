@@ -8,21 +8,31 @@
 package etherscan
 
 import (
+	"fmt"
+	"os"
 	"testing"
 	"time"
 )
+
+const apiKeyEnvName = "ETHERSCAN_API_KEY"
 
 var (
 	// api test client for many test cases
 	api *Client
 	// bucket default rate limiter
 	bucket *Bucket
+	// apiKey etherscan API key
+	apiKey string
 )
 
 func init() {
+	apiKey = os.Getenv(apiKeyEnvName)
+	if apiKey == "" {
+		panic(fmt.Sprintf("API key is empty, set env variable %q with a valid API key to proceed.", apiKeyEnvName))
+	}
 	bucket = NewBucket(200 * time.Millisecond)
 
-	api = New(Mainnet, "etherscan-api-e2e-test")
+	api = New(Mainnet, apiKey)
 	api.Verbose = true
 	api.BeforeRequest = func(module string, action string, param map[string]interface{}) error {
 		bucket.Take()
