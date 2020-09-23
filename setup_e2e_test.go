@@ -30,7 +30,7 @@ func init() {
 	if apiKey == "" {
 		panic(fmt.Sprintf("API key is empty, set env variable %q with a valid API key to proceed.", apiKeyEnvName))
 	}
-	bucket = NewBucket(200 * time.Millisecond)
+	bucket = NewBucket(300 * time.Millisecond)
 
 	api = New(Mainnet, apiKey)
 	api.Verbose = true
