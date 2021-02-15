@@ -21,7 +21,10 @@ import (
 func main() {
 	// create a API client for specified ethereum net
 	// there are many pre-defined network in package
-	client := etherscan.New(etherscan.Mainnet, "[your API key]")
+	client := etherscan.New(etherscan.Mainnet, "[your api key]")
+
+	// Alternatively, to use bscscan.com for bsc transactions, use:
+	// client := etherscan.New(etherscan.Mainnet, "[your api key]", etherscan.WithChain(etherscan.ChainBsc))
 
 	// (optional) add hooks, e.g. for rate limit
 	client.BeforeRequest = func(module, action string, param map[string]interface{}) error {
