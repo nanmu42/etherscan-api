@@ -38,16 +38,36 @@ type Client struct {
 	AfterRequest func(module, action string, param map[string]interface{}, outcome interface{}, requestErr error)
 }
 
+type Option struct {
+	chain Chain
+}
+
+type ClientOption func(o *Option)
+
+func WithChain(chain Chain) ClientOption {
+	return func(o *Option) {
+		o.chain = chain
+	}
+}
+
 // New initialize a new etherscan API client
 // please use pre-defined network value
-func New(network Network, APIKey string) *Client {
+func New(network Network, APIKey string, opts ...ClientOption) *Client {
+	option := Option{
+		chain: ChainEthereum,
+	}
+
+	for _, opt := range opts {
+		opt(&option)
+	}
+
 	return &Client{
 		coon: &http.Client{
 			Timeout: 30 * time.Second,
 		},
 		network: network,
 		key:     APIKey,
-		baseURL: fmt.Sprintf(`https://%s.etherscan.io/api?`, network.SubDomain()),
+		baseURL: fmt.Sprintf(string(option.chain), network.SubDomain()),
 	}
 }
 

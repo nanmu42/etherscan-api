@@ -20,7 +20,12 @@ const (
 	Rinkby Network = "api-rinkeby"
 	// Tobalaba Testnet
 	Tobalaba Network = "api-tobalaba"
+
+	ChainEthereum Chain = "https://%s.etherscan.io/api?"
+	ChainBsc Chain = "https://%s.bscscan.com/api?"
 )
+
+type Chain string
 
 // Network is ethereum network type (mainnet, ropsten, etc)
 type Network string
