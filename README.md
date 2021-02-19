@@ -6,7 +6,7 @@
 [![GoDoc](https://godoc.org/github.com/nanmu42/etherscan-api?status.svg)](https://godoc.org/github.com/nanmu42/etherscan-api)
 [中文文档](https://github.com/nanmu42/etherscan-api/blob/master/README_ZH.md)
 
-Go bindings to the Etherscan.io API, with nearly Full implementation(accounts, transactions, tokens, contracts, blocks, stats), full network support(Mainnet, Ropsten, Kovan, Rinkby, Tobalaba), and only depending on standard library. :wink:
+Go bindings to the Etherscan.io API(and its families like BscScan), with nearly Full implementation(accounts, transactions, tokens, contracts, blocks, stats), full network support(Mainnet, Ropsten, Kovan, Rinkby, Tobalaba), and only depending on standard library. :wink:
 
 # Usage
 
@@ -22,6 +22,15 @@ func main() {
 	// create a API client for specified ethereum net
 	// there are many pre-defined network in package
 	client := etherscan.New(etherscan.Mainnet, "[your API key]")
+	
+	// or, if you are working with etherscan-family API like BscScan
+	//
+	// client := etherscan.NewCustomized(etherscan.Customization{
+    // Timeout:       15 * time.Second,
+    // Key:           "You key here",
+    // BaseURL:       "https://api.bscscan.com/api?",
+    // Verbose:       false,
+    // })
 
 	// (optional) add hooks, e.g. for rate limit
 	client.BeforeRequest = func(module, action string, param map[string]interface{}) error {
