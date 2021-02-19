@@ -26,11 +26,11 @@ func main() {
 	// or, if you are working with etherscan-family API like BscScan
 	//
 	// client := etherscan.NewCustomized(etherscan.Customization{
-    // Timeout:       15 * time.Second,
-    // Key:           "You key here",
-    // BaseURL:       "https://api.bscscan.com/api?",
-    // Verbose:       false,
-    // })
+	// Timeout:       15 * time.Second,
+	// Key:           "You key here",
+	// BaseURL:       "https://api.bscscan.com/api?",
+	// Verbose:       false,
+	// })
 
 	// (optional) add hooks, e.g. for rate limit
 	client.BeforeRequest = func(module, action string, param map[string]interface{}) error {
