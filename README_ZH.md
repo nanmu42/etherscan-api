@@ -24,7 +24,16 @@ import (
 func main() {
 	// 创建连接指定网络的客户端
 	client := etherscan.New(etherscan.Mainnet, "[your API key]")
-
+	
+	// 或者，如果你要调用的是EtherScan家族的BscScan：
+	//
+	// client := etherscan.NewCustomized(etherscan.Customization{
+	// Timeout:       15 * time.Second,
+	// Key:           "You key here",
+	// BaseURL:       "https://api.bscscan.com/api?",
+	// Verbose:       false,
+	// })	
+	
 	// （可选）按需注册钩子函数，例如用于速率控制
 	client.BeforeRequest = func(module, action string, param map[string]interface{}) error {
 		// ...
