@@ -22,7 +22,6 @@ import (
 // Clients are safe for concurrent use by multiple goroutines.
 type Client struct {
 	coon    *http.Client
-	network Network
 	key     string
 	baseURL string
 
@@ -41,13 +40,45 @@ type Client struct {
 // New initialize a new etherscan API client
 // please use pre-defined network value
 func New(network Network, APIKey string) *Client {
+	return NewCustomized(Customization{
+		Timeout: 30 * time.Second,
+		Key:     APIKey,
+		BaseURL: fmt.Sprintf(`https://%s.etherscan.io/api?`, network.SubDomain()),
+	})
+}
+
+// Customization is used in NewCustomized()
+type Customization struct {
+	// Timeout for API call
+	Timeout time.Duration
+	// API key applied from Etherscan
+	Key string
+	// Base URL like `https://api.etherscan.io/api?`
+	BaseURL string
+	// When true, talks a lot
+	Verbose bool
+
+	// BeforeRequest runs before every client request, in the same goroutine.
+	// May be used in rate limit.
+	// Request will be aborted, if BeforeRequest returns non-nil err.
+	BeforeRequest func(module, action string, param map[string]interface{}) error
+
+	// AfterRequest runs after every client request, even when there is an error.
+	AfterRequest func(module, action string, param map[string]interface{}, outcome interface{}, requestErr error)
+}
+
+// NewCustomized initialize a customized API client,
+// useful when calling against etherscan-family API like BscScan.
+func NewCustomized(config Customization) *Client {
 	return &Client{
 		coon: &http.Client{
-			Timeout: 30 * time.Second,
+			Timeout: config.Timeout,
 		},
-		network: network,
-		key:     APIKey,
-		baseURL: fmt.Sprintf(`https://%s.etherscan.io/api?`, network.SubDomain()),
+		key:           config.Key,
+		baseURL:       config.BaseURL,
+		Verbose:       config.Verbose,
+		BeforeRequest: config.BeforeRequest,
+		AfterRequest:  config.AfterRequest,
 	}
 }
 
