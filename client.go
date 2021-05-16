@@ -57,6 +57,9 @@ type Customization struct {
 	BaseURL string
 	// When true, talks a lot
 	Verbose bool
+	// HTTP Client to be used. Specifying this value will ignore the Timeout value set
+	// Set your own timeout.
+	Client *http.Client
 
 	// BeforeRequest runs before every client request, in the same goroutine.
 	// May be used in rate limit.
@@ -70,10 +73,16 @@ type Customization struct {
 // NewCustomized initialize a customized API client,
 // useful when calling against etherscan-family API like BscScan.
 func NewCustomized(config Customization) *Client {
-	return &Client{
-		coon: &http.Client{
+	var httpClient *http.Client
+	if config.Client != nil {
+		httpClient = config.Client
+	} else {
+		httpClient = &http.Client{
 			Timeout: config.Timeout,
-		},
+		}
+	}
+	return &Client{
+		coon:          httpClient,
 		key:           config.Key,
 		baseURL:       config.BaseURL,
 		Verbose:       config.Verbose,
