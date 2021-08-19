@@ -18,6 +18,8 @@ const (
 	Kovan Network = "api-kovan"
 	// Rinkby Testnet(CLIQUE)
 	Rinkby Network = "api-rinkeby"
+	// Goerli Testnet(CLIQUE)
+	Goerli Network = "api-goerli"
 	// Tobalaba Testnet
 	Tobalaba Network = "api-tobalaba"
 )
@@ -27,6 +29,6 @@ type Network string
 
 // SubDomain returns the subdomain of  etherscan API
 // via n provided.
-func (n Network) SubDomain() (sub string)  {
+func (n Network) SubDomain() (sub string) {
 	return string(n)
 }

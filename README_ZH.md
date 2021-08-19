@@ -8,7 +8,7 @@
 
 Etherscan.io的Golang实现，
 支持几乎所有功能（accounts, transactions, tokens, contracts, blocks, stats），
-所有公共网络（Mainnet, Ropsten, Kovan, Rinkby, Tobalaba）。
+所有公共网络（Mainnet, Ropsten, Kovan, Rinkby, Goerli, Tobalaba）。
 本项目只依赖于官方库。 :wink:
 
 # Usage
