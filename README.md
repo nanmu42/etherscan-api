@@ -6,7 +6,7 @@
 [![GoDoc](https://godoc.org/github.com/nanmu42/etherscan-api?status.svg)](https://godoc.org/github.com/nanmu42/etherscan-api)
 [中文文档](https://github.com/nanmu42/etherscan-api/blob/master/README_ZH.md)
 
-Go bindings to the Etherscan.io API(and its families like BscScan), with nearly Full implementation(accounts, transactions, tokens, contracts, blocks, stats), full network support(Mainnet, Ropsten, Kovan, Rinkby, Tobalaba), and only depending on standard library. :wink:
+Go bindings to the Etherscan.io API(and its families like BscScan), with nearly Full implementation(accounts, transactions, tokens, contracts, blocks, stats), full network support(Mainnet, Ropsten, Kovan, Rinkby, Goerli, Tobalaba), and only depending on standard library. :wink:
 
 # Usage
 
