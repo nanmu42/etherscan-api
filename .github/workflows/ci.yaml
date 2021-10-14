@@ -19,6 +19,11 @@ jobs:
         with:
           go-version: "1.x"
 
+      - name: Install Dependencies
+        run: |
+            go mod download github.com/davecgh/go-spew
+            go mod download github.com/google/go-cmp
+
       - name: Test
         env:
           ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
