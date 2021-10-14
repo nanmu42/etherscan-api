@@ -7,6 +7,8 @@
 
 package etherscan
 
+import "strconv"
+
 // BlockReward gets block and uncle rewards by block number
 func (c *Client) BlockReward(blockNum int) (rewards BlockRewards, err error) {
 	param := M{
@@ -14,5 +16,24 @@ func (c *Client) BlockReward(blockNum int) (rewards BlockRewards, err error) {
 	}
 
 	err = c.call("block", "getblockreward", param, &rewards)
+	return
+}
+
+// BlockReward gets closest block number by UNIX timestamp
+func (c *Client) BlockNumber(timestamp int64, closest string) (blockNumber BlockNumberFromTimestamp, err error) {
+	var result string
+	param := M{
+		"timestamp": strconv.Itoa(int(timestamp)),
+		"closest":   closest,
+	}
+
+	err = c.call("block", "getblocknobytime", param, &result)
+
+	if err != nil {
+		return
+	}
+
+	blockNum, err := strconv.ParseInt(result, 10, 64)
+	blockNumber.BlockNumber = int(blockNum)
 	return
 }

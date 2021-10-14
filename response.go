@@ -129,6 +129,11 @@ type BlockRewards struct {
 	UncleInclusionReward *BigInt `json:"uncleInclusionReward"`
 }
 
+// BlockNumberFromTimestamp holds info from query for block by UNIX timestamp
+type BlockNumberFromTimestamp struct {
+	BlockNumber int
+}
+
 // LatestPrice holds info from query for latest ether price
 type LatestPrice struct {
 	ETHBTC          float64 `json:"ethbtc,string"`
