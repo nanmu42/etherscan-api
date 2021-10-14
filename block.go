@@ -19,8 +19,8 @@ func (c *Client) BlockReward(blockNum int) (rewards BlockRewards, err error) {
 	return
 }
 
-// BlockReward gets closest block number by UNIX timestamp
-func (c *Client) BlockNumber(timestamp int64, closest string) (blockNumber BlockNumberFromTimestamp, err error) {
+// BlockNumber gets closest block number by UNIX timestamp
+func (c *Client) BlockNumber(timestamp int64, closest string) (blockNumber int, err error) {
 	var result string
 	param := M{
 		"timestamp": strconv.Itoa(int(timestamp)),
@@ -34,6 +34,6 @@ func (c *Client) BlockNumber(timestamp int64, closest string) (blockNumber Block
 	}
 
 	blockNum, err := strconv.ParseInt(result, 10, 64)
-	blockNumber.BlockNumber = int(blockNum)
+	blockNumber = int(blockNum)
 	return
 }

@@ -33,14 +33,14 @@ func TestClient_BlockNumber(t *testing.T) {
 	blockNumber, err := api.BlockNumber(1578638524, "before")
 	noError(t, err, "api.BlockNumber")
 
-	if blockNumber.BlockNumber != ans_before {
-		t.Errorf(`api.BlockNumber(1578638524, "before") not working, got %d, want %d`, blockNumber.BlockNumber, ans_before)
+	if blockNumber != ans_before {
+		t.Errorf(`api.BlockNumber(1578638524, "before") not working, got %d, want %d`, blockNumber, ans_before)
 	}
 
 	blockNumber, err = api.BlockNumber(1578638524, "after")
 	noError(t, err, "api.BlockNumber")
 
-	if blockNumber.BlockNumber != ans_after {
-		t.Errorf(`api.BlockNumber(1578638524,"after") not working, got %d, want %d`, blockNumber.BlockNumber, ans_after)
+	if blockNumber != ans_after {
+		t.Errorf(`api.BlockNumber(1578638524,"after") not working, got %d, want %d`, blockNumber, ans_after)
 	}
 }
