@@ -5,6 +5,8 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  schedule:
+    - cron: "42 6 * * 0"
 
 jobs:
   build:
@@ -18,6 +20,8 @@ jobs:
           go-version: "1.x"
 
       - name: Test
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
         run: go test -v -coverprofile=coverage.txt -covermode=count ./...
 
       - name: Codecov
