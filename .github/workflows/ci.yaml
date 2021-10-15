@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    - cron: "42 6 * * 0"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.x"
+
+      - name: Test
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        run: go test -v -coverprofile=coverage.txt -covermode=count ./...
+
+      - name: Codecov
+        uses: codecov/codecov-action@v2.1.0
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2

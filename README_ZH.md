@@ -1,17 +1,22 @@
+[English](https://github.com/nanmu42/etherscan-api/blob/master/README.md) | **中文**
+
 # etherscan-api
 
-[![Build Status](https://travis-ci.org/nanmu42/etherscan-api.svg?branch=master)](https://travis-ci.org/nanmu42/etherscan-api)
-[![Go Report Card](https://goreportcard.com/badge/github.com/nanmu42/etherscan-api)](https://goreportcard.com/report/github.com/nanmu42/etherscan-api)
-[![codecov](https://codecov.io/gh/nanmu42/etherscan-api/branch/master/graph/badge.svg)](https://codecov.io/gh/nanmu42/etherscan-api)
 [![GoDoc](https://godoc.org/github.com/nanmu42/etherscan-api?status.svg)](https://godoc.org/github.com/nanmu42/etherscan-api)
-[English Readme](https://github.com/nanmu42/etherscan-api/blob/master/README.md)
+[![CI status](https://github.com/nanmu42/etherscan-api/workflows/build/ci.svg)](https://github.com/nanmu42/etherscan-api/actions)
+[![codecov](https://codecov.io/gh/nanmu42/etherscan-api/branch/master/graph/badge.svg)](https://codecov.io/gh/nanmu42/etherscan-api)
+[![Go Report Card](https://goreportcard.com/badge/github.com/nanmu42/etherscan-api)](https://goreportcard.com/report/github.com/nanmu42/etherscan-api)
 
-Etherscan.io的Golang实现，
+Etherscan API的Golang客户端，
 支持几乎所有功能（accounts, transactions, tokens, contracts, blocks, stats），
 所有公共网络（Mainnet, Ropsten, Kovan, Rinkby, Goerli, Tobalaba）。
 本项目只依赖于官方库。 :wink:
 
-# Usage
+# 使用方法
+
+```bash
+go get github.com/nanmu42/etherscan-api
+```
 
 填入网络选项和API Key即可开始使用。 :rocket:
 

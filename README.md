@@ -1,16 +1,21 @@
+**English** | [中文](https://github.com/nanmu42/etherscan-api/blob/master/README_ZH.md)
+
 # etherscan-api
 
-[![Build Status](https://travis-ci.org/nanmu42/etherscan-api.svg?branch=master)](https://travis-ci.org/nanmu42/etherscan-api)
-[![Go Report Card](https://goreportcard.com/badge/github.com/nanmu42/etherscan-api)](https://goreportcard.com/report/github.com/nanmu42/etherscan-api)
-[![codecov](https://codecov.io/gh/nanmu42/etherscan-api/branch/master/graph/badge.svg)](https://codecov.io/gh/nanmu42/etherscan-api)
 [![GoDoc](https://godoc.org/github.com/nanmu42/etherscan-api?status.svg)](https://godoc.org/github.com/nanmu42/etherscan-api)
-[中文文档](https://github.com/nanmu42/etherscan-api/blob/master/README_ZH.md)
+[![CI status](https://github.com/nanmu42/etherscan-api/workflows/build/ci.svg)](https://github.com/nanmu42/etherscan-api/actions)
+[![codecov](https://codecov.io/gh/nanmu42/etherscan-api/branch/master/graph/badge.svg)](https://codecov.io/gh/nanmu42/etherscan-api)
+[![Go Report Card](https://goreportcard.com/badge/github.com/nanmu42/etherscan-api)](https://goreportcard.com/report/github.com/nanmu42/etherscan-api)
 
-Go bindings to the Etherscan.io API(and its families like BscScan), with nearly Full implementation(accounts, transactions, tokens, contracts, blocks, stats), full network support(Mainnet, Ropsten, Kovan, Rinkby, Goerli, Tobalaba), and only depending on standard library. :wink:
+Golang client for the Etherscan.io API(and its families like BscScan), with nearly full implementation(accounts, transactions, tokens, contracts, blocks, stats), full network support(Mainnet, Ropsten, Kovan, Rinkby, Goerli, Tobalaba), and only depending on standard library. :wink:
 
 # Usage
 
-Create a API instance and off you go. :rocket:
+```bash
+go get github.com/nanmu42/etherscan-api
+```
+
+Create an API instance and off you go. :rocket:
 
 ```go
 import (
@@ -70,6 +75,6 @@ I am not from Etherscan and I just find their service really useful, so I implem
 
 # License
 
-Use of this work is governed by a MIT License.
+Use of this work is governed by an MIT License.
 
 You may find a license copy in project root.
