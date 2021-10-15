@@ -24,3 +24,23 @@ func TestClient_BlockReward(t *testing.T) {
 		t.Errorf("api.BlockReward not working, got %s, want %s", j, ans)
 	}
 }
+
+func TestClient_BlockNumber(t *testing.T) {
+	//Note: All values taken from docs.etherscan.io/api-endpoints/blocks
+	const ans_before = 9251482
+	const ans_after = 9251483
+
+	blockNumber, err := api.BlockNumber(1578638524, "before")
+	noError(t, err, "api.BlockNumber")
+
+	if blockNumber != ans_before {
+		t.Errorf(`api.BlockNumber(1578638524, "before") not working, got %d, want %d`, blockNumber, ans_before)
+	}
+
+	blockNumber, err = api.BlockNumber(1578638524, "after")
+	noError(t, err, "api.BlockNumber")
+
+	if blockNumber != ans_after {
+		t.Errorf(`api.BlockNumber(1578638524,"after") not working, got %d, want %d`, blockNumber, ans_after)
+	}
+}
