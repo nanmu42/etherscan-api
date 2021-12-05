@@ -8,6 +8,8 @@
 package etherscan
 
 import (
+	"encoding/json"
+	"fmt"
 	"math/big"
 	"testing"
 )
@@ -147,5 +149,23 @@ func TestClient_TokenBalance(t *testing.T) {
 
 	if balance.Int().Cmp(big.NewInt(0)) != 1 {
 		t.Errorf("api.TokenBalance not working, got balance %s", balance.Int().String())
+	}
+}
+
+func TestClient_ERC721Transfers(t *testing.T) {
+	const (
+		wantLen = 351
+	)
+
+	var a, b = 4708442, 9231168
+	var contract, address = "0x06012c8cf97bead5deae237070f9587f8e7a266d", "0x6975be450864c02b4613023c2152ee0743572325"
+	txs, err := api.ERC721Transfers(&contract, &address, &a, &b, 1, 500, true)
+	noError(t, err, "api.ERC721Transfers")
+
+	j, _ := json.MarshalIndent(txs, "", "  ")
+	fmt.Printf("%s\n", j)
+
+	if len(txs) != wantLen {
+		t.Errorf("got txs length %v, want %v", len(txs), wantLen)
 	}
 }
