@@ -22,12 +22,9 @@ func TestClient_GetLogs(t *testing.T) {
 
 	noError(t, err, "api.GetLogs")
 
-	var expected []map[string]interface{}
-	var actual []map[string]interface{}
-
 	equal := cmp.Equal(expectedLogs, actualLogs)
 
 	if !equal {
-		t.Errorf("api.GetLogs not working\n: %s\n", cmp.Diff(expected, actual))
+		t.Errorf("api.GetLogs not working\n: %s\n", cmp.Diff(expectedLogs, actualLogs))
 	}
 }
