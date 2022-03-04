@@ -159,3 +159,15 @@ type LatestPrice struct {
 	ETHUSD          float64 `json:"ethusd,string"`
 	ETHUSDTimestamp Time    `json:"ethusd_timestamp"`
 }
+
+type Log struct {
+	Address         string   `json:"address"`
+	Topics          []string `json:"topics"`
+	Data            string   `json:"data"`
+	BlockNumber     string   `json:"blockNumber"`
+	TransactionHash string   `json:"transactionHash"`
+	BlockHash       string   `json:"blockHash"`
+	LogIndex        string   `json:"logIndex"`
+	Removed         bool     `json:"removed"`
+}
+
