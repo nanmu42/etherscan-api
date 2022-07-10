@@ -127,7 +127,11 @@ type ContractSource struct {
 	OptimizationUsed     int    `json:"OptimizationUsed,string"`
 	Runs                 int    `json:"Runs,string"`
 	ConstructorArguments string `json:"ConstructorArguments"`
+	EVMVersion           string `json:"EVMVersion"`
 	Library              string `json:"Library"`
+	LicenseType          string `json:"LicenseType"`
+	Proxy                string `json:"Proxy"`
+	Implementation       string `json:"Implementation"`
 	SwarmSource          string `json:"SwarmSource"`
 }
 
