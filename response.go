@@ -175,3 +175,13 @@ type Log struct {
 	Removed         bool     `json:"removed"`
 }
 
+//GasPrices holds info for Gas Oracle queries
+//Gas Prices are returned in Gwei
+type GasPrices struct {
+	LastBlock            string
+	SafeGasPrice         string
+	ProposeGasPrice      string
+	FastGasPrice         string
+	SuggestBaseFeeInGwei string `json:"suggestBaseFee"`
+	GasUsedRatio         string `json:"gasUsedRatio"`
+}
