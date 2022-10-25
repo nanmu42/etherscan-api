@@ -7,11 +7,17 @@
 
 package etherscan
 
+import "time"
+
 // GasEstiamte gets estiamted confirmation time (in seconds) at the given gas price
-func (c *Client) GasEstimate(gasPrice int) (confirmationTimeInSec string, err error) {
+func (c *Client) GasEstimate(gasPrice int) (confirmationTimeInSec time.Duration, err error) {
 	params := M{"gasPrice": gasPrice}
-	err = c.call("gastracker", "gasestimate", params, &confirmationTimeInSec)
-	return
+	var confTime string
+	err = c.call("gastracker", "gasestimate", params, &confTime)
+	if err != nil {
+		return
+	}
+	return time.ParseDuration(confTime + "s")
 }
 
 // GasOracle gets suggested gas prices (in Gwei)
