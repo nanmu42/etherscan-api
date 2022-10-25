@@ -7,7 +7,12 @@
 
 package etherscan
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 // Envelope is the carrier of nearly every response
 type Envelope struct {
@@ -175,3 +180,65 @@ type Log struct {
 	Removed         bool     `json:"removed"`
 }
 
+//GasPrices holds info for Gas Oracle queries
+//Gas Prices are returned in Gwei
+type GasPrices struct {
+	LastBlock            int
+	SafeGasPrice         float64
+	ProposeGasPrice      float64
+	FastGasPrice         float64
+	SuggestBaseFeeInGwei float64   `json:"suggestBaseFee"`
+	GasUsedRatio         []float64 `json:"gasUsedRatio"`
+}
+
+func (gp *GasPrices) UnmarshalJSON(data []byte) error {
+	_gp := struct {
+		LastBlock            string
+		SafeGasPrice         string
+		ProposeGasPrice      string
+		FastGasPrice         string
+		SuggestBaseFeeInGwei string `json:"suggestBaseFee"`
+		GasUsedRatio         string `json:"gasUsedRatio"`
+	}{}
+
+	err := json.Unmarshal(data, &_gp)
+	if err != nil {
+		return err
+	}
+
+	gp.LastBlock, err = strconv.Atoi(_gp.LastBlock)
+	if err != nil {
+		return fmt.Errorf("Unable to convert LastBlock %s to int: %w", _gp.LastBlock, err)
+	}
+
+	gp.SafeGasPrice, err = strconv.ParseFloat(_gp.SafeGasPrice, 64)
+	if err != nil {
+		return fmt.Errorf("Unable to convert SafeGasPrice %s to float64: %w", _gp.SafeGasPrice, err)
+	}
+
+	gp.ProposeGasPrice, err = strconv.ParseFloat(_gp.ProposeGasPrice, 64)
+	if err != nil {
+		return fmt.Errorf("Unable to convert ProposeGasPrice %s to float64: %w", _gp.ProposeGasPrice, err)
+	}
+
+	gp.FastGasPrice, err = strconv.ParseFloat(_gp.FastGasPrice, 64)
+	if err != nil {
+		return fmt.Errorf("Unable to convert FastGasPrice %s to float64: %w", _gp.FastGasPrice, err)
+	}
+
+	gp.SuggestBaseFeeInGwei, err = strconv.ParseFloat(_gp.SuggestBaseFeeInGwei, 64)
+	if err != nil {
+		return fmt.Errorf("Unable to convert SuggestBaseFeeInGwei %s to float64: %w", _gp.SuggestBaseFeeInGwei, err)
+	}
+
+	gasRatios := strings.Split(_gp.GasUsedRatio, ",")
+	gp.GasUsedRatio = make([]float64, len(gasRatios))
+	for i, gasRatio := range gasRatios {
+		gp.GasUsedRatio[i], err = strconv.ParseFloat(gasRatio, 64)
+		if err != nil {
+			return fmt.Errorf("Unable to convert gasRatio %s to float64: %w", gasRatio, err)
+		}
+	}
+
+	return nil
+}
