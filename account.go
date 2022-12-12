@@ -131,6 +131,30 @@ func (c *Client) ERC721Transfers(contractAddress, address *string, startBlock *i
 	return
 }
 
+// ERC1155Transfers get a list of "erc1155 - token transfer events" by
+// contract address and/or from/to address.
+//
+// leave undesired condition to nil.
+func (c *Client) ERC1155Transfers(contractAddress, address *string, startBlock *int, endBlock *int, page int, offset int, desc bool) (txs []ERC1155Transfer, err error) {
+	param := M{
+		"page":   page,
+		"offset": offset,
+	}
+	compose(param, "contractaddress", contractAddress)
+	compose(param, "address", address)
+	compose(param, "startblock", startBlock)
+	compose(param, "endblock", endBlock)
+
+	if desc {
+		param["sort"] = "desc"
+	} else {
+		param["sort"] = "asc"
+	}
+
+	err = c.call("account", "token1155tx", param, &txs)
+	return
+}
+
 // BlocksMinedByAddress gets list of blocks mined by address
 func (c *Client) BlocksMinedByAddress(address string, page int, offset int) (mined []MinedBlock, err error) {
 	param := M{
