@@ -169,3 +169,21 @@ func TestClient_ERC721Transfers(t *testing.T) {
 		t.Errorf("got txs length %v, want %v", len(txs), wantLen)
 	}
 }
+
+func TestClient_ERC1155Transfers(t *testing.T) {
+	const (
+		wantLen = 1
+	)
+
+	var a, b = 128135633, 1802672
+	var contract, address = "0x3edf71a31b80Ff6a45Fdb0858eC54DE98dF047AA", "0x4b986EF20Bb83532911521FB4F6F5605122a0721"
+	txs, err := api.ERC1155Transfers(&contract, &address, &b, &a, 0, 0, true)
+	noError(t, err, "api.ERC721Transfers")
+
+	j, _ := json.MarshalIndent(txs, "", "  ")
+	fmt.Printf("%s\n", j)
+
+	if len(txs) != wantLen {
+		t.Errorf("got txs length %v, want %v", len(txs), wantLen)
+	}
+}
