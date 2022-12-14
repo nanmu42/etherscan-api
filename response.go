@@ -116,6 +116,30 @@ type ERC721Transfer struct {
 	Confirmations     int     `json:"confirmations,string"`
 }
 
+// ERC1155Transfer holds info from ERC1155 token transfer event query
+type ERC1155Transfer struct {
+	BlockNumber       int     `json:"blockNumber,string"`
+	TimeStamp         Time    `json:"timeStamp"`
+	Hash              string  `json:"hash"`
+	Nonce             int     `json:"nonce,string"`
+	BlockHash         string  `json:"blockHash"`
+	From              string  `json:"from"`
+	ContractAddress   string  `json:"contractAddress"`
+	To                string  `json:"to"`
+	TokenID           *BigInt `json:"tokenID"`
+	TokenName         string  `json:"tokenName"`
+	TokenSymbol       string  `json:"tokenSymbol"`
+	TokenDecimal      uint8   `json:"tokenDecimal,string"`
+	TokenValue        uint8   `json:"tokenValue,string"`
+	TransactionIndex  int     `json:"transactionIndex,string"`
+	Gas               int     `json:"gas,string"`
+	GasPrice          *BigInt `json:"gasPrice"`
+	GasUsed           int     `json:"gasUsed,string"`
+	CumulativeGasUsed int     `json:"cumulativeGasUsed,string"`
+	Input             string  `json:"input"`
+	Confirmations     int     `json:"confirmations,string"`
+}
+
 // MinedBlock holds info from query for mined block by address
 type MinedBlock struct {
 	BlockNumber int     `json:"blockNumber,string"`
@@ -180,8 +204,8 @@ type Log struct {
 	Removed         bool     `json:"removed"`
 }
 
-//GasPrices holds info for Gas Oracle queries
-//Gas Prices are returned in Gwei
+// GasPrices holds info for Gas Oracle queries
+// Gas Prices are returned in Gwei
 type GasPrices struct {
 	LastBlock            int
 	SafeGasPrice         float64
