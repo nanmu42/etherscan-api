@@ -35,7 +35,7 @@ func init() {
 	if apiKey == "" {
 		panic(fmt.Sprintf("API key is empty, set env variable %q with a valid API key to proceed.", apiKeyEnvName))
 	}
-	backupApiKey = os.Getenv(apiKeyEnvName)
+	backupApiKey = os.Getenv(backupApiKeyEnvName)
 	if backupApiKey == "" {
 		log.Printf("WARN: Backup API key is empty, set env variable %q with a valid API key to proceed.", backupApiKeyEnvName)
 	}
