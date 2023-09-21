@@ -52,7 +52,17 @@ func (c *Client) getKey() string {
 
 // New initialize a new etherscan API client
 // please use pre-defined network value
-func New(network Network, APIKeys []string) *Client {
+func New(network Network, APIKeys string) *Client {
+	return NewCustomized(Customization{
+		Timeout: 30 * time.Second,
+		Keys:    []string{APIKeys},
+		BaseURL: fmt.Sprintf(`https://%s.etherscan.io/api?`, network.SubDomain()),
+	})
+}
+
+// New initialize a new etherscan API client
+// please use pre-defined network value
+func NewMultiKey(network Network, APIKeys []string) *Client {
 	return NewCustomized(Customization{
 		Timeout: 30 * time.Second,
 		Keys:    APIKeys,
