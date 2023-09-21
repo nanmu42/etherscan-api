@@ -1,4 +1,4 @@
-module github.com/nanmu42/etherscan-api
+module github.com/NFEL/etherscan-api-multikey
 
 go 1.13
 
