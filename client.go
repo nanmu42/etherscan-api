@@ -15,15 +15,18 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"sync"
 	"time"
 )
 
 // Client etherscan API client
 // Clients are safe for concurrent use by multiple goroutines.
 type Client struct {
-	coon    *http.Client
-	key     string
-	baseURL string
+	coon           *http.Client
+	baseURL        string
+	keys           []string
+	keySelectMutex sync.Mutex
+	keySelectIdx   int
 
 	// Verbose when true, talks a lot
 	Verbose bool
@@ -37,12 +40,22 @@ type Client struct {
 	AfterRequest func(module, action string, param map[string]interface{}, outcome interface{}, requestErr error)
 }
 
+func (c *Client) getKey() string {
+	c.keySelectMutex.Lock()
+	defer c.keySelectMutex.Unlock()
+	c.keySelectIdx++
+	if c.keySelectIdx >= len(c.keys) {
+		c.keySelectIdx = 0
+	}
+	return c.keys[c.keySelectIdx]
+}
+
 // New initialize a new etherscan API client
 // please use pre-defined network value
-func New(network Network, APIKey string) *Client {
+func New(network Network, APIKeys []string) *Client {
 	return NewCustomized(Customization{
 		Timeout: 30 * time.Second,
-		Key:     APIKey,
+		Keys:    APIKeys,
 		BaseURL: fmt.Sprintf(`https://%s.etherscan.io/api?`, network.SubDomain()),
 	})
 }
@@ -51,8 +64,8 @@ func New(network Network, APIKey string) *Client {
 type Customization struct {
 	// Timeout for API call
 	Timeout time.Duration
-	// API key applied from Etherscan
-	Key string
+	// API keys applied from Etherscan
+	Keys []string
 	// Base URL like `https://api.etherscan.io/api?`
 	BaseURL string
 	// When true, talks a lot
@@ -83,7 +96,7 @@ func NewCustomized(config Customization) *Client {
 	}
 	return &Client{
 		coon:          httpClient,
-		key:           config.Key,
+		keys:          config.Keys,
 		baseURL:       config.BaseURL,
 		Verbose:       config.Verbose,
 		BeforeRequest: config.BeforeRequest,
@@ -117,7 +130,7 @@ func (c *Client) call(module, action string, param map[string]interface{}, outco
 		err = wrapErr(err, "http.NewRequest")
 		return
 	}
-	req.Header.Set("User-Agent", "etherscan-api(Go)")
+	req.Header.Set("User-Agent", "etherscan-api-multikey(Go)")
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 
 	if c.Verbose {
@@ -196,7 +209,7 @@ func (c *Client) craftURL(module, action string, param map[string]interface{}) (
 	q := url.Values{
 		"module": []string{module},
 		"action": []string{action},
-		"apikey": []string{c.key},
+		"apikey": []string{c.getKey()},
 	}
 
 	for k, v := range param {
