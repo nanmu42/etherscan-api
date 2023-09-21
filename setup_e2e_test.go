@@ -41,7 +41,8 @@ func init() {
 	}
 	bucket = NewBucket(500 * time.Millisecond)
 
-	api = New(Mainnet, []string{apiKey, backupApiKey})
+	api = New(Mainnet, apiKey)
+	api = NewMultiKey(Mainnet, []string{apiKey, backupApiKey})
 	api.Verbose = true
 	api.BeforeRequest = func(module string, action string, param map[string]interface{}) error {
 		bucket.Take()

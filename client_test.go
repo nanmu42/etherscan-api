@@ -12,7 +12,7 @@ import (
 )
 
 func TestClient_craftURL(t *testing.T) {
-	c := New(Ropsten, []string{"abc123"})
+	c := New(Ropsten, "abc123")
 
 	const expected = `https://api-ropsten.etherscan.io/api?action=craftURL&apikey=abc123&four=d&four=e&four=f&module=testing&one=1&three=1&three=2&three=3&two=2`
 	output := c.craftURL("testing", "craftURL", M{
