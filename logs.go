@@ -8,12 +8,29 @@
 package etherscan
 
 // GetLogs gets logs that match "topic" emitted by the specified "address" between the "fromBlock" and "toBlock"
-func (c *Client) GetLogs(fromBlock, toBlock int, address, topic string) (logs []Log, err error) {
+func (c *Client) GetLogs(address string, fromBlock, toBlock *int, topic *string, page, offset *int) (logs []Log, err error) {
 	param := M{
-		"fromBlock": fromBlock,
-		"toBlock":   toBlock,
-		"topic0":    topic,
-		"address":   address,
+		"address": address,
+	}
+
+	if fromBlock != nil {
+		param["fromBlock"] = *fromBlock
+	}
+
+	if toBlock != nil {
+		param["toBlock"] = *toBlock
+	}
+
+	if topic != nil {
+		param["topic0"] = *topic
+	}
+
+	if page != nil {
+		param["page"] = *page
+	}
+
+	if offset != nil {
+		param["offset"] = *offset
 	}
 
 	err = c.call("logs", "getLogs", param, &logs)
