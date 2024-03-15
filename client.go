@@ -77,9 +77,8 @@ func NewCustomized(config Customization) *Client {
 	if config.Client != nil {
 		httpClient = config.Client
 	} else {
-		httpClient = &http.Client{
-			Timeout: config.Timeout,
-		}
+		httpClient = http.DefaultClient
+		httpClient.Timeout = config.Timeout
 	}
 	return &Client{
 		coon:          httpClient,
