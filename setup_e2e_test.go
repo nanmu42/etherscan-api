@@ -9,12 +9,16 @@ package etherscan
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"testing"
 	"time"
 )
 
-const apiKeyEnvName = "ETHERSCAN_API_KEY"
+const (
+	apiKeyEnvName       = "ETHERSCAN_API_KEY"
+	backupApiKeyEnvName = "BACKUP_ETHERSCAN_API_KEY"
+)
 
 var (
 	// api test client for many test cases
@@ -22,7 +26,8 @@ var (
 	// bucket default rate limiter
 	bucket *Bucket
 	// apiKey etherscan API key
-	apiKey string
+	apiKey       string
+	backupApiKey string
 )
 
 func init() {
@@ -30,9 +35,14 @@ func init() {
 	if apiKey == "" {
 		panic(fmt.Sprintf("API key is empty, set env variable %q with a valid API key to proceed.", apiKeyEnvName))
 	}
+	backupApiKey = os.Getenv(backupApiKeyEnvName)
+	if backupApiKey == "" {
+		log.Printf("WARN: Backup API key is empty, set env variable %q with a valid API key to proceed.", backupApiKeyEnvName)
+	}
 	bucket = NewBucket(500 * time.Millisecond)
 
 	api = New(Mainnet, apiKey)
+	api = NewMultiKey(Mainnet, []string{apiKey, backupApiKey})
 	api.Verbose = true
 	api.BeforeRequest = func(module string, action string, param map[string]interface{}) error {
 		bucket.Take()
