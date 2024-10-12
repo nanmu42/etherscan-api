@@ -43,7 +43,7 @@ func New(network Network, APIKey string) *Client {
 	return NewCustomized(Customization{
 		Timeout: 30 * time.Second,
 		Key:     APIKey,
-		BaseURL: fmt.Sprintf(`https://%s.etherscan.io/api?`, network.SubDomain()),
+		BaseURL: MapNetworkToURL[network],
 	})
 }
 

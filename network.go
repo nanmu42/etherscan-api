@@ -11,18 +11,19 @@ const (
 	//// Ethereum public networks
 
 	// Mainnet Ethereum mainnet for production
-	Mainnet Network = "api"
-	// Ropsten Testnet(POW)
-	Ropsten Network = "api-ropsten"
-	// Kovan Testnet(POA)
-	Kovan Network = "api-kovan"
-	// Rinkby Testnet(CLIQUE)
-	Rinkby Network = "api-rinkeby"
-	// Goerli Testnet(CLIQUE)
-	Goerli Network = "api-goerli"
-	// Tobalaba Testnet
-	Tobalaba Network = "api-tobalaba"
+	Mainnet Network = "ethereum"
+	Sepolia Network = "sepolia"
+
+	Polygon     Network = "polygon"
+	PolygonAmoy Network = "amoy"
 )
+
+var MapNetworkToURL = map[Network]string{
+	Mainnet:     "https://api.etherscan.io/api?",
+	Sepolia:     "https://api-sepolia.etherscan.io/api?",
+	Polygon:     "https://api.polygonscan.com/api?",
+	PolygonAmoy: "https://api-amoy.polygonscan.com/api?",
+}
 
 // Network is ethereum network type (mainnet, ropsten, etc)
 type Network string
