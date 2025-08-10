@@ -9,21 +9,24 @@ package etherscan
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strconv"
 	"time"
+
+	"github.com/nanmu42/etherscan-api/pkg/chain"
 )
 
 // Client etherscan API client
 // Clients are safe for concurrent use by multiple goroutines.
 type Client struct {
-	coon    *http.Client
+	conn    *http.Client
 	key     string
 	baseURL string
+	chain   chain.Chain
 
 	// Verbose when true, talks a lot
 	Verbose bool
@@ -37,13 +40,14 @@ type Client struct {
 	AfterRequest func(module, action string, param map[string]interface{}, outcome interface{}, requestErr error)
 }
 
-// New initialize a new etherscan API client
+// NewClient initialize a new etherscan API client
 // please use pre-defined network value
-func New(network Network, APIKey string) *Client {
+func NewClient(chain chain.Chain, APIKey string) *Client {
 	return NewCustomized(Customization{
 		Timeout: 30 * time.Second,
 		Key:     APIKey,
-		BaseURL: fmt.Sprintf(`https://%s.etherscan.io/api?`, network.SubDomain()),
+		Chain:   chain,
+		BaseURL: `https://api.etherscan.io/v2/api`,
 	})
 }
 
@@ -57,6 +61,8 @@ type Customization struct {
 	BaseURL string
 	// When true, talks a lot
 	Verbose bool
+	// ChainID to be used
+	Chain chain.Chain
 	// HTTP Client to be used. Specifying this value will ignore the Timeout value set
 	// Set your own timeout.
 	Client *http.Client
@@ -77,13 +83,12 @@ func NewCustomized(config Customization) *Client {
 	if config.Client != nil {
 		httpClient = config.Client
 	} else {
-		httpClient = &http.Client{
-			Timeout: config.Timeout,
-		}
+		httpClient = &http.Client{Timeout: config.Timeout}
 	}
 	return &Client{
-		coon:          httpClient,
+		conn:          httpClient,
 		key:           config.Key,
+		chain:         config.Chain,
 		baseURL:       config.BaseURL,
 		Verbose:       config.Verbose,
 		BeforeRequest: config.BeforeRequest,
@@ -92,40 +97,20 @@ func NewCustomized(config Customization) *Client {
 }
 
 // call does almost all the dirty work.
-func (c *Client) call(module, action string, param map[string]interface{}, outcome interface{}) (err error) {
-	// fire hooks if in need
-	if c.BeforeRequest != nil {
-		err = c.BeforeRequest(module, action, param)
-		if err != nil {
-			err = wrapErr(err, "beforeRequest")
-			return
-		}
-	}
-	if c.AfterRequest != nil {
-		defer c.AfterRequest(module, action, param, outcome, err)
-	}
+func (c *Client) call(module, action string, values url.Values) (bytes.Buffer, error) {
+	var content = bytes.Buffer{}
 
-	// recover if there shall be an panic
-	defer func() {
-		if r := recover(); r != nil {
-			err = fmt.Errorf("[ouch! panic recovered] please report this with what you did and what you expected, panic detail: %v", r)
-		}
-	}()
-
-	req, err := http.NewRequest(http.MethodGet, c.craftURL(module, action, param), http.NoBody)
+	req, err := http.NewRequest(http.MethodGet, c.craftURL(module, action, values), http.NoBody)
 	if err != nil {
-		err = wrapErr(err, "http.NewRequest")
-		return
+		return content, fmt.Errorf("creating request: %w", err)
 	}
 	req.Header.Set("User-Agent", "etherscan-api(Go)")
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 
 	if c.Verbose {
-		var reqDump []byte
-		reqDump, err = httputil.DumpRequestOut(req, false)
+		reqDump, err := httputil.DumpRequestOut(req, false)
 		if err != nil {
-			err = wrapErr(err, "verbose mode req dump failed")
-			return
+			return content, fmt.Errorf("verbose mode: dumping request: %w", err)
 		}
 
 		fmt.Printf("\n%s\n", reqDump)
@@ -137,72 +122,42 @@ func (c *Client) call(module, action string, param map[string]interface{}, outco
 		}()
 	}
 
-	res, err := c.coon.Do(req)
+	res, err := c.conn.Do(req)
 	if err != nil {
-		err = wrapErr(err, "sending request")
-		return
+		return content, fmt.Errorf("sending request: %w", err)
 	}
 	defer res.Body.Close()
 
 	if c.Verbose {
-		var resDump []byte
-		resDump, err = httputil.DumpResponse(res, true)
+		resDump, err := httputil.DumpResponse(res, true)
 		if err != nil {
-			err = wrapErr(err, "verbose mode res dump failed")
-			return
+			return content, fmt.Errorf("verbose mode:dumping response: %w", err)
 		}
 
 		fmt.Printf("%s\n", resDump)
 	}
 
-	var content bytes.Buffer
 	if _, err = io.Copy(&content, res.Body); err != nil {
-		err = wrapErr(err, "reading response")
-		return
+		return content, fmt.Errorf("reading response: %w", err)
 	}
 
 	if res.StatusCode != http.StatusOK {
-		err = fmt.Errorf("response status %v %s, response body: %s", res.StatusCode, res.Status, content.String())
-		return
+		return content, fmt.Errorf("got non-200 status code; status: %v, status text: %s, response body: %s", res.StatusCode, res.Status, content.String())
 	}
 
-	var envelope Envelope
-	err = json.Unmarshal(content.Bytes(), &envelope)
-	if err != nil {
-		err = wrapErr(err, "json unmarshal envelope")
-		return
-	}
-	if envelope.Status != 1 {
-		err = fmt.Errorf("etherscan server: %s", envelope.Message)
-		return
-	}
-
-	// workaround for missing tokenDecimal for some tokentx calls
-	if action == "tokentx" {
-		err = json.Unmarshal(bytes.Replace(envelope.Result, []byte(`"tokenDecimal":""`), []byte(`"tokenDecimal":"0"`), -1), outcome)
-	} else {
-		err = json.Unmarshal(envelope.Result, outcome)
-	}
-	if err != nil {
-		err = wrapErr(err, "json unmarshal outcome")
-		return
-	}
-
-	return
+	return content, nil
 }
 
 // craftURL returns desired URL via param provided
-func (c *Client) craftURL(module, action string, param map[string]interface{}) (URL string) {
-	q := url.Values{
-		"module": []string{module},
-		"action": []string{action},
-		"apikey": []string{c.key},
+func (c *Client) craftURL(module, action string, values url.Values) string {
+	if values == nil {
+		values = url.Values{}
 	}
 
-	for k, v := range param {
-		q[k] = extractValue(v)
-	}
+	values.Add("module", module)
+	values.Add("action", action)
+	values.Add("apikey", c.key)
+	values.Add("chainid", strconv.Itoa(c.chain.ID()))
 
-	URL = c.baseURL + q.Encode()
-	return
+	return fmt.Sprintf("%s?%s", c.baseURL, values.Encode())
 }

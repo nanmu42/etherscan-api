@@ -7,24 +7,51 @@
 
 package etherscan
 
+import (
+	"net/url"
+
+	"github.com/nanmu42/etherscan-api/pkg/response"
+	"github.com/nanmu42/etherscan-api/pkg/types"
+	"github.com/pkg/errors"
+)
+
+type TokenTotalSupplyParams struct {
+	ContractAddress string `json:"contractaddress"`
+}
+
+func (p TokenTotalSupplyParams) GetUrlValues() url.Values {
+	values := url.Values{}
+	if p.ContractAddress != "" {
+		values.Add("contractaddress", p.ContractAddress)
+	}
+	return values
+}
+
 // EtherTotalSupply gets total supply of ether
-func (c *Client) EtherTotalSupply() (totalSupply *BigInt, err error) {
-	err = c.call("stats", "ethsupply", nil, &totalSupply)
-	return
+func (c *Client) EtherTotalSupply() (totalSupply types.BigInt, err error) {
+	body, err := c.call("stats", "ethsupply", nil)
+	if err != nil {
+		return types.BigInt{}, errors.Wrap(err, "executing ExecutionStatus request")
+	}
+	return response.ReadResponse[types.BigInt](body)
 }
 
 // EtherLatestPrice gets the latest ether price, in BTC and USD
-func (c *Client) EtherLatestPrice() (price LatestPrice, err error) {
-	err = c.call("stats", "ethprice", nil, &price)
-	return
+func (c *Client) EtherLatestPrice() (price response.LatestPrice, err error) {
+	body, err := c.call("stats", "ethprice", nil)
+	if err != nil {
+		return response.LatestPrice{}, errors.Wrap(err, "executing LatestPrice request")
+	}
+	return response.ReadResponse[response.LatestPrice](body)
 }
 
 // TokenTotalSupply gets total supply of token on specified contract address
-func (c *Client) TokenTotalSupply(contractAddress string) (totalSupply *BigInt, err error) {
-	param := M{
-		"contractaddress": contractAddress,
-	}
+func (c *Client) TokenTotalSupply(contractAddress string) (types.BigInt, error) {
+	values := TokenTotalSupplyParams{ContractAddress: contractAddress}
 
-	err = c.call("stats", "tokensupply", param, &totalSupply)
-	return
+	body, err := c.call("stats", "tokensupply", values.GetUrlValues())
+	if err != nil {
+		return types.BigInt{}, errors.Wrap(err, "executing TokenTotalSupply request")
+	}
+	return response.ReadResponse[types.BigInt](body)
 }

@@ -1,194 +1,309 @@
-/*
- * Copyright (c) 2018 LI Zhennan
- *
- * Use of this work is governed by a MIT License.
- * You may find a license copy in project root.
- */
-
 package etherscan
 
-// AccountBalance gets ether balance for a single address
-func (c *Client) AccountBalance(address string) (balance *BigInt, err error) {
-	param := M{
-		"tag":     "latest",
-		"address": address,
-	}
-	balance = new(BigInt)
-	err = c.call("account", "balance", param, balance)
-	return
+import (
+	"fmt"
+	"net/url"
+	"strconv"
+	"strings"
+
+	"github.com/nanmu42/etherscan-api/pkg/response"
+	"github.com/nanmu42/etherscan-api/pkg/types"
+)
+
+type AccountBalanceParams struct {
+	Tag     string `json:"tag"`
+	Address string `json:"address"`
 }
 
-// MultiAccountBalance gets ether balance for multiple addresses in a single call
-func (c *Client) MultiAccountBalance(addresses ...string) (balances []AccountBalance, err error) {
-	param := M{
-		"tag":     "latest",
-		"address": addresses,
-	}
-	balances = make([]AccountBalance, 0, len(addresses))
-	err = c.call("account", "balancemulti", param, &balances)
-	return
+type MultiAccountBalanceParams struct {
+	Tag       string   `json:"tag"`
+	Addresses []string `json:"address"`
 }
 
-// NormalTxByAddress gets a list of "normal" transactions by address
-//
-// startBlock and endBlock can be nil
-//
-// if desc is true, result will be sorted in blockNum descendant order.
-func (c *Client) NormalTxByAddress(address string, startBlock *int, endBlock *int, page int, offset int, desc bool) (txs []NormalTx, err error) {
-	param := M{
-		"address": address,
-		"page":    page,
-		"offset":  offset,
+type TxListParams struct {
+	Address    string `json:"address"`
+	StartBlock *int   `json:"startblock,omitempty"`
+	EndBlock   *int   `json:"endblock,omitempty"`
+	Page       int    `json:"page"`
+	Offset     int    `json:"offset"`
+	Sort       string `json:"sort"`
+}
+
+type TokenTransferParams struct {
+	ContractAddress *string `json:"contractaddress,omitempty"`
+	Address         *string `json:"address,omitempty"`
+	StartBlock      *int    `json:"startblock,omitempty"`
+	EndBlock        *int    `json:"endblock,omitempty"`
+	Page            int     `json:"page"`
+	Offset          int     `json:"offset"`
+	Sort            string  `json:"sort"`
+}
+
+type MinedBlockParams struct {
+	Address   string `json:"address"`
+	BlockType string `json:"blocktype"`
+	Page      int    `json:"page"`
+	Offset    int    `json:"offset"`
+}
+
+type TokenBalanceParams struct {
+	ContractAddress string `json:"contractaddress"`
+	Address         string `json:"address"`
+	Tag             string `json:"tag"`
+}
+
+func (p AccountBalanceParams) GetUrlValues() url.Values {
+	values := url.Values{}
+	if p.Tag != "" {
+		values.Add("tag", p.Tag)
 	}
-	compose(param, "startblock", startBlock)
-	compose(param, "endblock", endBlock)
+	if p.Address != "" {
+		values.Add("address", p.Address)
+	}
+	return values
+}
+
+func (p MultiAccountBalanceParams) GetUrlValues() url.Values {
+	values := url.Values{}
+	if p.Tag != "" {
+		values.Add("tag", p.Tag)
+	}
+	if len(p.Addresses) > 0 {
+		values.Add("address", strings.Join(p.Addresses, ","))
+	}
+	return values
+}
+
+func (p TxListParams) GetUrlValues() url.Values {
+	values := url.Values{}
+	if p.Address != "" {
+		values.Add("address", p.Address)
+	}
+	if p.StartBlock != nil {
+		values.Add("startblock", strconv.Itoa(*p.StartBlock))
+	}
+	if p.EndBlock != nil {
+		values.Add("endblock", strconv.Itoa(*p.EndBlock))
+	}
+	values.Add("page", strconv.Itoa(p.Page))
+	values.Add("offset", strconv.Itoa(p.Offset))
+	if p.Sort != "" {
+		values.Add("sort", p.Sort)
+	}
+	return values
+}
+
+func (p TokenTransferParams) GetUrlValues() url.Values {
+	values := url.Values{}
+	if p.ContractAddress != nil {
+		values.Add("contractaddress", *p.ContractAddress)
+	}
+	if p.Address != nil {
+		values.Add("address", *p.Address)
+	}
+	if p.StartBlock != nil {
+		values.Add("startblock", strconv.Itoa(*p.StartBlock))
+	}
+	if p.EndBlock != nil {
+		values.Add("endblock", strconv.Itoa(*p.EndBlock))
+	}
+	values.Add("page", strconv.Itoa(p.Page))
+	values.Add("offset", strconv.Itoa(p.Offset))
+	if p.Sort != "" {
+		values.Add("sort", p.Sort)
+	}
+	return values
+}
+
+func (p MinedBlockParams) GetUrlValues() url.Values {
+	values := url.Values{}
+	if p.Address != "" {
+		values.Add("address", p.Address)
+	}
+	if p.BlockType != "" {
+		values.Add("blocktype", p.BlockType)
+	}
+	values.Add("page", strconv.Itoa(p.Page))
+	values.Add("offset", strconv.Itoa(p.Offset))
+	return values
+}
+
+func (p TokenBalanceParams) GetUrlValues() url.Values {
+	values := url.Values{}
+	if p.ContractAddress != "" {
+		values.Add("contractaddress", p.ContractAddress)
+	}
+	if p.Address != "" {
+		values.Add("address", p.Address)
+	}
+	if p.Tag != "" {
+		values.Add("tag", p.Tag)
+	}
+	return values
+}
+
+// Refactored methods
+func (c *Client) AccountBalance(address string) (types.BigInt, error) {
+	param := AccountBalanceParams{
+		Tag:     "latest",
+		Address: address,
+	}
+	body, err := c.call("account", "balance", param.GetUrlValues())
+	if err != nil {
+		return types.BigInt{}, fmt.Errorf("executing AccountBalance request: %w", err)
+	}
+	fmt.Printf("%s\n", body.Bytes())
+	return response.ReadResponse[types.BigInt](body)
+}
+
+func (c *Client) MultiAccountBalance(addresses ...string) ([]response.AccountBalance, error) {
+	param := MultiAccountBalanceParams{
+		Tag:       "latest",
+		Addresses: addresses,
+	}
+	body, err := c.call("account", "balancemulti", param.GetUrlValues())
+	if err != nil {
+		return []response.AccountBalance{}, fmt.Errorf("executing MultiAccountBalance request: %w", err)
+	}
+	return response.ReadResponse[[]response.AccountBalance](body)
+}
+
+func (c *Client) NormalTxByAddress(address string, startBlock *int, endBlock *int, page int, offset int, desc bool) ([]response.NormalTx, error) {
+	param := TxListParams{
+		Address:    address,
+		StartBlock: startBlock,
+		EndBlock:   endBlock,
+		Page:       page,
+		Offset:     offset,
+		Sort:       "asc",
+	}
 	if desc {
-		param["sort"] = "desc"
-	} else {
-		param["sort"] = "asc"
+		param.Sort = "desc"
 	}
-
-	err = c.call("account", "txlist", param, &txs)
-	return
+	body, err := c.call("account", "txlist", param.GetUrlValues())
+	if err != nil {
+		return []response.NormalTx{}, fmt.Errorf("executing NormalTxByAddress request: %w", err)
+	}
+	return response.ReadResponse[[]response.NormalTx](body)
 }
 
-// InternalTxByAddress gets a list of "internal" transactions by address
-//
-// startBlock and endBlock can be nil
-//
-// if desc is true, result will be sorted in descendant order.
-func (c *Client) InternalTxByAddress(address string, startBlock *int, endBlock *int, page int, offset int, desc bool) (txs []InternalTx, err error) {
-	param := M{
-		"address": address,
-		"page":    page,
-		"offset":  offset,
+func (c *Client) InternalTxByAddress(address string, startBlock *int, endBlock *int, page int, offset int, desc bool) ([]response.InternalTx, error) {
+	param := TxListParams{
+		Address:    address,
+		StartBlock: startBlock,
+		EndBlock:   endBlock,
+		Page:       page,
+		Offset:     offset,
+		Sort:       "asc",
 	}
-	compose(param, "startblock", startBlock)
-	compose(param, "endblock", endBlock)
 	if desc {
-		param["sort"] = "desc"
-	} else {
-		param["sort"] = "asc"
+		param.Sort = "desc"
 	}
 
-	err = c.call("account", "txlistinternal", param, &txs)
-	return
+	body, err := c.call("account", "txlistinternal", param.GetUrlValues())
+	if err != nil {
+		return []response.InternalTx{}, fmt.Errorf("executing InternalTxByAddress request: %w", err)
+	}
+	return response.ReadResponse[[]response.InternalTx](body)
 }
 
-// ERC20Transfers get a list of "erc20 - token transfer events" by
-// contract address and/or from/to address.
-//
-// leave undesired condition to nil.
-//
-// Note on a Etherscan bug:
-// Some ERC20 contract does not have valid decimals information in Etherscan.
-// When that happens, TokenName, TokenSymbol are empty strings,
-// and TokenDecimal is 0.
-//
-// More information can be found at:
-// https://github.com/nanmu42/etherscan-api/issues/8
-func (c *Client) ERC20Transfers(contractAddress, address *string, startBlock *int, endBlock *int, page int, offset int, desc bool) (txs []ERC20Transfer, err error) {
-	param := M{
-		"page":   page,
-		"offset": offset,
+func (c *Client) ERC20Transfers(contractAddress, address *string, startBlock *int, endBlock *int, page int, offset int, desc bool) ([]response.ERC20Transfer, error) {
+	param := TokenTransferParams{
+		ContractAddress: contractAddress,
+		Address:         address,
+		StartBlock:      startBlock,
+		EndBlock:        endBlock,
+		Page:            page,
+		Offset:          offset,
+		Sort:            "asc",
 	}
-	compose(param, "contractaddress", contractAddress)
-	compose(param, "address", address)
-	compose(param, "startblock", startBlock)
-	compose(param, "endblock", endBlock)
-
 	if desc {
-		param["sort"] = "desc"
-	} else {
-		param["sort"] = "asc"
+		param.Sort = "desc"
 	}
-
-	err = c.call("account", "tokentx", param, &txs)
-	return
+	body, err := c.call("account", "tokentx", param.GetUrlValues())
+	if err != nil {
+		return []response.ERC20Transfer{}, fmt.Errorf("executing ERC20Transfers request: %w", err)
+	}
+	return response.ReadResponse[[]response.ERC20Transfer](body)
 }
 
-// ERC721Transfers get a list of "erc721 - token transfer events" by
-// contract address and/or from/to address.
-//
-// leave undesired condition to nil.
-func (c *Client) ERC721Transfers(contractAddress, address *string, startBlock *int, endBlock *int, page int, offset int, desc bool) (txs []ERC721Transfer, err error) {
-	param := M{
-		"page":   page,
-		"offset": offset,
+func (c *Client) ERC721Transfers(contractAddress, address *string, startBlock *int, endBlock *int, page int, offset int, desc bool) ([]response.ERC721Transfer, error) {
+	param := TokenTransferParams{
+		ContractAddress: contractAddress,
+		Address:         address,
+		StartBlock:      startBlock,
+		EndBlock:        endBlock,
+		Page:            page,
+		Offset:          offset,
+		Sort:            "asc",
 	}
-	compose(param, "contractaddress", contractAddress)
-	compose(param, "address", address)
-	compose(param, "startblock", startBlock)
-	compose(param, "endblock", endBlock)
-
 	if desc {
-		param["sort"] = "desc"
-	} else {
-		param["sort"] = "asc"
+		param.Sort = "desc"
 	}
-
-	err = c.call("account", "tokennfttx", param, &txs)
-	return
+	body, err := c.call("account", "tokennfttx", param.GetUrlValues())
+	if err != nil {
+		return []response.ERC721Transfer{}, fmt.Errorf("executing ERC721Transfers request: %w", err)
+	}
+	return response.ReadResponse[[]response.ERC721Transfer](body)
 }
 
-// ERC1155Transfers get a list of "erc1155 - token transfer events" by
-// contract address and/or from/to address.
-//
-// leave undesired condition to nil.
-func (c *Client) ERC1155Transfers(contractAddress, address *string, startBlock *int, endBlock *int, page int, offset int, desc bool) (txs []ERC1155Transfer, err error) {
-	param := M{
-		"page":   page,
-		"offset": offset,
+func (c *Client) ERC1155Transfers(contractAddress, address *string, startBlock *int, endBlock *int, page int, offset int, desc bool) ([]response.ERC1155Transfer, error) {
+	param := TokenTransferParams{
+		ContractAddress: contractAddress,
+		Address:         address,
+		StartBlock:      startBlock,
+		EndBlock:        endBlock,
+		Page:            page,
+		Offset:          offset,
+		Sort:            "asc",
 	}
-	compose(param, "contractaddress", contractAddress)
-	compose(param, "address", address)
-	compose(param, "startblock", startBlock)
-	compose(param, "endblock", endBlock)
-
 	if desc {
-		param["sort"] = "desc"
-	} else {
-		param["sort"] = "asc"
+		param.Sort = "desc"
 	}
-
-	err = c.call("account", "token1155tx", param, &txs)
-	return
+	body, err := c.call("account", "token1155tx", param.GetUrlValues())
+	if err != nil {
+		return []response.ERC1155Transfer{}, fmt.Errorf("executing ERC1155Transfers request: %w", err)
+	}
+	return response.ReadResponse[[]response.ERC1155Transfer](body)
 }
 
-// BlocksMinedByAddress gets list of blocks mined by address
-func (c *Client) BlocksMinedByAddress(address string, page int, offset int) (mined []MinedBlock, err error) {
-	param := M{
-		"address":   address,
-		"blocktype": "blocks",
-		"page":      page,
-		"offset":    offset,
+func (c *Client) BlocksMinedByAddress(address string, page int, offset int) ([]response.MinedBlock, error) {
+	param := MinedBlockParams{
+		Address:   address,
+		BlockType: "blocks",
+		Page:      page,
+		Offset:    offset,
 	}
-
-	err = c.call("account", "getminedblocks", param, &mined)
-	return
+	body, err := c.call("account", "getminedblocks", param.GetUrlValues())
+	if err != nil {
+		return []response.MinedBlock{}, fmt.Errorf("executing BlocksMinedByAddress request: %w", err)
+	}
+	return response.ReadResponse[[]response.MinedBlock](body)
 }
 
-// UnclesMinedByAddress gets list of uncles mined by address
-func (c *Client) UnclesMinedByAddress(address string, page int, offset int) (mined []MinedBlock, err error) {
-	param := M{
-		"address":   address,
-		"blocktype": "uncles",
-		"page":      page,
-		"offset":    offset,
+func (c *Client) UnclesMinedByAddress(address string, page int, offset int) ([]response.MinedBlock, error) {
+	param := MinedBlockParams{
+		Address:   address,
+		BlockType: "uncles",
+		Page:      page,
+		Offset:    offset,
 	}
-
-	err = c.call("account", "getminedblocks", param, &mined)
-	return
+	body, err := c.call("account", "getminedblocks", param.GetUrlValues())
+	if err != nil {
+		return []response.MinedBlock{}, fmt.Errorf("executing UnclesMinedByAddress request: %w", err)
+	}
+	return response.ReadResponse[[]response.MinedBlock](body)
 }
 
-// TokenBalance get erc20-token account balance of address for contractAddress
-func (c *Client) TokenBalance(contractAddress, address string) (balance *BigInt, err error) {
-	param := M{
-		"contractaddress": contractAddress,
-		"address":         address,
-		"tag":             "latest",
+func (c *Client) TokenBalance(contractAddress, address string) (types.BigInt, error) {
+	param := TokenBalanceParams{
+		ContractAddress: contractAddress,
+		Address:         address,
+		Tag:             "latest",
 	}
-
-	err = c.call("account", "tokenbalance", param, &balance)
-	return
+	body, err := c.call("account", "tokenbalance", param.GetUrlValues())
+	if err != nil {
+		return types.BigInt{}, fmt.Errorf("executing TokenBalance request: %w", err)
+	}
+	return response.ReadResponse[types.BigInt](body)
 }

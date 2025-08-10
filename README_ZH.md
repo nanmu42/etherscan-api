@@ -1,4 +1,4 @@
-[English](https://github.com/nanmu42/etherscan-api/blob/master/README.md) | **中文**
+<!-- [English](https://github.com/nanmu42/etherscan-api/blob/master/README.md) | **中文**
 
 # etherscan-api
 
@@ -80,4 +80,4 @@ API的调用速率不能高于5次/秒，否则会遭到封禁。
 
 MIT
 
-请自由享受开源，欢迎贡献开源。
+请自由享受开源，欢迎贡献开源。 -->
