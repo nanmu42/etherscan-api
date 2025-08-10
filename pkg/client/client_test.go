@@ -11,7 +11,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/nanmu42/etherscan-api/pkg/chain"
+	"github.com/farbodan/etherscan-api/pkg/chain"
 	"github.com/stretchr/testify/assert"
 )
 

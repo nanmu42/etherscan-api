@@ -17,7 +17,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/nanmu42/etherscan-api/pkg/chain"
+	"github.com/farbodan/etherscan-api/pkg/chain"
 )
 
 // Client etherscan API client

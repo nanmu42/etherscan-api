@@ -10,8 +10,8 @@ package etherscan
 import (
 	"net/url"
 
-	"github.com/nanmu42/etherscan-api/pkg/response"
-	"github.com/nanmu42/etherscan-api/pkg/types"
+	"github.com/farbodan/etherscan-api/pkg/response"
+	"github.com/farbodan/etherscan-api/pkg/types"
 	"github.com/pkg/errors"
 )
 

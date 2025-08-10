@@ -12,7 +12,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/nanmu42/etherscan-api/pkg/response"
+	"github.com/farbodan/etherscan-api/pkg/response"
 )
 
 type LogParams struct {

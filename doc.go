@@ -6,4 +6,4 @@
 // and only depending on standard library.
 //
 // Example can be found at https://github.com/nanmu42/etherscan-api
-package etherscan
+package main

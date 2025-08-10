@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/nanmu42/etherscan-api/pkg/types"
+	"github.com/farbodan/etherscan-api/pkg/types"
 )
 
 type EtherscanResponse interface {
