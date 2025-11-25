@@ -32,7 +32,10 @@ func init() {
 	}
 	bucket = NewBucket(500 * time.Millisecond)
 
-	api = New(Mainnet, apiKey)
+	api = NewCustomized(Customization{
+		BaseURL: "https://api.etherscan.io/v2/api?chainid=1&",
+		Key:     apiKey,
+	})
 	api.Verbose = true
 	api.BeforeRequest = func(module string, action string, param map[string]interface{}) error {
 		bucket.Take()

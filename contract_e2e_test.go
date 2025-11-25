@@ -8,6 +8,7 @@
 package etherscan
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -36,5 +37,20 @@ func TestClient_ContractSource(t *testing.T) {
 		s.Runs != 200 ||
 		s.OptimizationUsed != 1 {
 		t.Fatalf("api.ContractSource not working, content match failed, got\n%+v", s)
+	}
+}
+
+func TestClient_ContractCreation(t *testing.T) {
+	creation, err := api.ContractCreation("0xBB9bc244D798123fDe783fCc1C72d3Bb8C189413")
+	noError(t, err, "api.ContractCreation")
+
+	if len(creation) != 1 {
+		t.Fatalf("api.ContractCreation not working, got len %v, expect 1", len(creation))
+	}
+	c := creation[0]
+	if !strings.EqualFold(c.ContractCreator, "0x793ea9692Ada1900fBd0B80FFFEc6E431fe8b391") ||
+		c.BlockNumber != 1428757 ||
+		c.TxHash != "0xe9ebfecc2fa10100db51a4408d18193b3ac504584b51a4e55bdef1318f0a30f9" {
+		t.Fatalf("api.ContractCreation not working, content match failed, got\n%+v", c)
 	}
 }

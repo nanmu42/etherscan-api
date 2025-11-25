@@ -17,7 +17,7 @@ import (
 // Envelope is the carrier of nearly every response
 type Envelope struct {
 	// 1 for good, 0 for error
-	Status int `json:"status,string"`
+	Status json.Number `json:"status"`
 	// OK for good, other words when Status equals 0
 	Message string `json:"message"`
 	// where response lies
@@ -166,6 +166,17 @@ type ContractSource struct {
 	SwarmSource          string `json:"SwarmSource"`
 }
 
+// ContractCreation holds info from query for contract creation
+type ContractCreation struct {
+	ContractAddress  string `json:"contractAddress"`
+	ContractCreator  string `json:"contractCreator"`
+	TxHash           string `json:"txHash"`
+	BlockNumber      int    `json:"blockNumber,string"`
+	Timestamp        Time   `json:"timestamp"`
+	ContractFactory  string `json:"contractFactory"`
+	CreationBytecode string `json:"creationBytecode"`
+}
+
 // ExecutionStatus holds info from query for transaction execution status
 type ExecutionStatus struct {
 	// 0 = pass, 1 = error
@@ -200,6 +211,7 @@ type Log struct {
 	Topics          []string `json:"topics"`
 	Data            string   `json:"data"`
 	BlockNumber     string   `json:"blockNumber"`
+	Timestamp       string   `json:"timeStamp"`
 	TransactionHash string   `json:"transactionHash"`
 	BlockHash       string   `json:"blockHash"`
 	LogIndex        string   `json:"logIndex"`

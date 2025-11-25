@@ -166,13 +166,15 @@ func (c *Client) call(module, action string, param map[string]interface{}, outco
 		return
 	}
 
+	fixedContent := bytes.ReplaceAll(content.Bytes(), []byte(`"transactionIndex":""`), []byte(`"transactionIndex":"0"`))
+
 	var envelope Envelope
-	err = json.Unmarshal(content.Bytes(), &envelope)
+	err = json.Unmarshal(fixedContent, &envelope)
 	if err != nil {
 		err = wrapErr(err, "json unmarshal envelope")
 		return
 	}
-	if envelope.Status != 1 {
+	if envelope.Status != "1" {
 		err = fmt.Errorf("etherscan server: %s", envelope.Message)
 		return
 	}
